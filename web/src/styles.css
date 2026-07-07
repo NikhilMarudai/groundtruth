@@ -20,6 +20,24 @@ body {
 header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; }
 .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
 .tag { color: var(--dim); }
+.auth-slot { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.who { color: var(--dim); font-size: 13px; }
+button.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line); }
+
+.live.locked { display: block; }
+.live.locked button { margin-top: 6px; }
+
+.history { margin-top: 16px; }
+.history ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.history li { font-size: 13px; padding: 3px 0; border-bottom: 1px solid var(--line); }
+.hdim { color: var(--dim); }
+
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.modal { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; width: 340px; max-width: 92vw; }
+.modal h2 { margin: 0 0 14px; }
+.modal input { width: 100%; background: var(--panel2); border: 1px solid var(--line); color: var(--text); border-radius: 9px; padding: 10px 12px; margin-bottom: 10px; font-size: 14px; }
+.modal button { width: 100%; margin-top: 4px; padding: 11px; }
+.switch { color: var(--accent); font-size: 13px; text-align: center; margin: 14px 0 0; cursor: pointer; }
 
 .hero {
   background: linear-gradient(135deg, #2a1f3d, #161b22);

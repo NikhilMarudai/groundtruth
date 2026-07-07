@@ -10,7 +10,11 @@
 | Name | Route | Auth | What |
 |---|---|---|---|
 | `insights` | `GET /fn/insights?now=<iso>` | none | Queries the Neo4j life graph over the HTTPS Query API → `{ reconciliation, misalignment, stall, timeByLabel }`. Source: [`functions/insights.ts`](functions/insights.ts). |
-| `perceive` | `POST /fn/perceive` | none | `{ image_url\|image_base64, now? }` → BB vision label → `camera_events` row + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision (~9× cheaper). |
+| `perceive` | `POST /fn/perceive` | **required (JWT)** | `{ image_url\|image_base64, now? }` → BB vision label → `camera_events` row + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision. Runs as the end user; `user_id` auto-populated by the RLS trigger. |
+
+## Auth & RLS (in active use)
+- **Auth:** email/password signup + login via `/auth/{app_id}/*` (JWT). The frontend gates the live camera + personal history behind login; `perceive` is `auth: required`.
+- **RLS:** `camera_events` and `nudges` have user-isolation policies (`create_user_isolation` on `user_id`) — a BEFORE-INSERT trigger stamps `user_id` from the JWT, and each user reads only their own rows via the data API (`GET /v1/{app_id}/camera_events` with their token).
 
 > Note: `perceive` inserts a live `Activity {source:"live"}` node per call. To reset the graph to the clean seed, rerun `npm --prefix graph run load`.
 

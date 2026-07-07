@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  getInsights, perceive, DEMO_NOW,
-  type Insights, type PerceiveResult,
+  getInsights, perceive, getMyCheckins, currentUser, login, signup, logout,
+  DEMO_NOW, type Insights, type PerceiveResult, type User, type CheckIn,
 } from "./api";
 
 const STATUS_META: Record<string, { color: string; label: string }> = {
@@ -10,7 +10,6 @@ const STATUS_META: Record<string, { color: string; label: string }> = {
   skipped: { color: "#f85149", label: "skipped" },
 };
 
-// Verified sample frames (used when the webcam isn't available on stage).
 const SAMPLES = [
   { name: "At a desk", url: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=640" },
   { name: "Exercising", url: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=640" },
@@ -20,6 +19,8 @@ const SAMPLES = [
 export default function App() {
   const [ins, setIns] = useState<Insights | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(currentUser());
+  const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
     getInsights(DEMO_NOW).then(setIns).catch((e) => setErr(String(e)));
@@ -34,6 +35,11 @@ export default function App() {
       <header>
         <div className="logo">◆ Groundtruth</div>
         <div className="tag">Does your day match your intentions?</div>
+        <div className="auth-slot">
+          {user
+            ? <><span className="who">{user.email}</span><button className="ghost" onClick={async () => { await logout(); setUser(null); }}>Log out</button></>
+            : <button onClick={() => setAuthOpen(true)}>Log in</button>}
+        </div>
       </header>
 
       {err && <div className="card err">Couldn’t load insights: {err}</div>}
@@ -42,14 +48,12 @@ export default function App() {
         <div className="hero">
           <div className="hero-k">Your #1 goal</div>
           <div className="hero-goal">“{stall.goal}”</div>
-          <div className="hero-stat">
-            hasn’t advanced in <b>{stall.daysSince} days</b>
-          </div>
+          <div className="hero-stat">hasn’t advanced in <b>{stall.daysSince} days</b></div>
           <div className="hero-sub">last touched {stall.lastAdvanced.slice(0, 10)} · week of Jun 29</div>
         </div>
       )}
 
-      <LivePanel />
+      <LivePanel user={user} onRequireAuth={() => setAuthOpen(true)} />
 
       <section className="grid">
         <div className="card">
@@ -76,15 +80,11 @@ export default function App() {
           {ins?.misalignment.map((m, i) => (
             <div className="bar-row" key={i}>
               <span className="bar-label">#{m.priority} {m.goal}</span>
-              <div className="bar-track">
-                <div className="bar-fill" style={{ width: `${(m.outputs / maxOut) * 100}%` }} />
-              </div>
+              <div className="bar-track"><div className="bar-fill" style={{ width: `${(m.outputs / maxOut) * 100}%` }} /></div>
               <span className="bar-val">{m.outputs}</span>
             </div>
           ))}
-          <p className="hint mt">
-            Your stated #1 goal has the fewest artifacts. The graph doesn’t lie.
-          </p>
+          <p className="hint mt">Your stated #1 goal has the fewest artifacts. The graph doesn’t lie.</p>
         </div>
 
         <div className="card">
@@ -93,35 +93,36 @@ export default function App() {
           {ins?.timeByLabel.map((t, i) => (
             <div className="bar-row" key={i}>
               <span className="bar-label">{t.label}</span>
-              <div className="bar-track">
-                <div className="bar-fill alt" style={{ width: `${(t.hours / maxHours) * 100}%` }} />
-              </div>
+              <div className="bar-track"><div className="bar-fill alt" style={{ width: `${(t.hours / maxHours) * 100}%` }} /></div>
               <span className="bar-val">{t.hours.toFixed(1)}h</span>
             </div>
           ))}
         </div>
       </section>
 
-      <footer>
-        Butterbase · Neo4j · RocketRide — reasoning over a live graph, not flat rows.
-      </footer>
+      <footer>Butterbase · Neo4j · RocketRide — reasoning over a live graph, not flat rows.</footer>
+
+      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} onAuthed={(u) => { setUser(u); setAuthOpen(false); }} />}
     </div>
   );
 }
 
-function LivePanel() {
+function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [camOn, setCamOn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [res, setRes] = useState<PerceiveResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [history, setHistory] = useState<CheckIn[]>([]);
+
+  useEffect(() => { if (user) getMyCheckins().then(setHistory); else setHistory([]); }, [user]);
 
   async function startCam() {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) { videoRef.current.srcObject = s; await videoRef.current.play(); }
       setCamOn(true);
-    } catch (e) { setErr("No webcam — use a sample below."); }
+    } catch { setErr("No webcam — use a sample below."); }
   }
 
   async function captureAndSend() {
@@ -130,25 +131,35 @@ function LivePanel() {
     const c = document.createElement("canvas");
     c.width = v.videoWidth || 640; c.height = v.videoHeight || 480;
     c.getContext("2d")!.drawImage(v, 0, 0, c.width, c.height);
-    const b64 = c.toDataURL("image/jpeg", 0.7).split(",")[1];
-    await send({ image_base64: b64 });
+    await send({ image_base64: c.toDataURL("image/jpeg", 0.7).split(",")[1] });
   }
 
   async function send(input: { image_base64?: string; image_url?: string }) {
     setBusy(true); setErr(null); setRes(null);
-    try { setRes(await perceive(input)); }
-    catch (e) { setErr(String(e)); }
+    try {
+      setRes(await perceive(input));
+      getMyCheckins().then(setHistory);
+    } catch (e) { setErr(String(e).replace("Error: ", "")); }
     finally { setBusy(false); }
+  }
+
+  if (!user) {
+    return (
+      <section className="card live locked">
+        <div>
+          <h2>See me right now</h2>
+          <p className="hint">Log in to run the live camera on yourself — Groundtruth reads a frame, drops it into your graph, and reasons about it against your plan.</p>
+          <button onClick={onRequireAuth}>Log in to try it</button>
+        </div>
+      </section>
+    );
   }
 
   return (
     <section className="card live">
       <div className="live-left">
         <h2>See me right now</h2>
-        <p className="hint">
-          The assistant reads a live frame, drops it into the graph at this moment,
-          and reasons about it against what you planned.
-        </p>
+        <p className="hint">Reads a live frame, drops it into the graph at this moment, and reasons about it against what you planned.</p>
         <video ref={videoRef} className={camOn ? "cam on" : "cam"} muted playsInline />
         <div className="live-actions">
           {!camOn
@@ -158,19 +169,26 @@ function LivePanel() {
         <div className="samples">
           <span className="hint">or a sample:</span>
           {SAMPLES.map((s) => (
-            <button key={s.name} className="chip" disabled={busy}
-              onClick={() => send({ image_url: s.url })}>{s.name}</button>
+            <button key={s.name} className="chip" disabled={busy} onClick={() => send({ image_url: s.url })}>{s.name}</button>
           ))}
         </div>
+        {history.length > 0 && (
+          <div className="history">
+            <span className="hint">your recent check-ins (RLS-scoped to you):</span>
+            <ul>
+              {history.map((h) => (
+                <li key={h.id}><b>{h.label}</b> <span className="hdim">{h.reason}</span></li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
       <div className="live-right">
         {busy && <div className="thinking">reasoning over the graph…</div>}
         {err && <div className="err">{err}</div>}
         {res && (
           <div className={`nudge ${res.severity}`}>
-            <div className="nudge-label">{res.label}
-              {res.confidence != null && <span className="conf"> · {(res.confidence * 100).toFixed(0)}%</span>}
-            </div>
+            <div className="nudge-label">{res.label}{res.confidence != null && <span className="conf"> · {(res.confidence * 100).toFixed(0)}%</span>}</div>
             <div className="nudge-body">{res.nudge}</div>
             {res.intended && <div className="nudge-plan">planned now: <b>{res.intended}</b></div>}
           </div>
@@ -178,5 +196,40 @@ function LivePanel() {
         {!busy && !res && !err && <div className="thinking idle">waiting for a frame…</div>}
       </div>
     </section>
+  );
+}
+
+function AuthModal({ onClose, onAuthed }: { onClose: () => void; onAuthed: (u: User) => void }) {
+  const [mode, setMode] = useState<"login" | "signup">("signup");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function submit() {
+    setBusy(true); setErr(null);
+    try {
+      const u = mode === "signup" ? await signup(email, password, name || undefined) : await login(email, password);
+      onAuthed(u);
+    } catch (e) { setErr(String(e).replace("Error: ", "")); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>{mode === "signup" ? "Create account" : "Log in"}</h2>
+        {mode === "signup" && <input placeholder="name (optional)" value={name} onChange={(e) => setName(e.target.value)} />}
+        <input placeholder="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input placeholder="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()} />
+        {mode === "signup" && <p className="hint">8+ chars with upper, lower, number, and a symbol.</p>}
+        {err && <div className="err">{err}</div>}
+        <button onClick={submit} disabled={busy || !email || !password}>{busy ? "…" : mode === "signup" ? "Sign up" : "Log in"}</button>
+        <p className="switch" onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setErr(null); }}>
+          {mode === "signup" ? "Have an account? Log in" : "New here? Create an account"}
+        </p>
+      </div>
+    </div>
   );
 }
