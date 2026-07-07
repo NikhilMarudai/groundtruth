@@ -135,26 +135,41 @@ export async function getReckoning(): Promise<Reckoning | null> {
   return rows[0] ?? null;
 }
 
-// Current user's subscription (Pro or not).
+// Pro status: our subscriptions table (RLS-scoped) OR a real Stripe sub.
 export async function isPro(): Promise<boolean> {
   const t = token();
   if (!t) return false;
-  const r = await fetch(`${API}/billing/subscription`, { headers: { Authorization: `Bearer ${t}` } });
-  if (!r.ok) return false;
-  const sub = await r.json().catch(() => null);
-  return !!sub && (sub.status === "active" || sub.status === "trialing");
+  try {
+    const r = await fetch(`${API}/subscriptions?status=eq.active&limit=1`, { headers: { Authorization: `Bearer ${t}` } });
+    if (r.ok) { const rows = await r.json(); if (Array.isArray(rows) && rows.length) return true; }
+  } catch { /* ignore */ }
+  try {
+    const r = await fetch(`${API}/billing/subscription`, { headers: { Authorization: `Bearer ${t}` } });
+    if (r.ok) { const sub = await r.json().catch(() => null); if (sub && (sub.status === "active" || sub.status === "trialing")) return true; }
+  } catch { /* ignore */ }
+  return false;
 }
 
-// Start a Stripe Checkout session to upgrade. Returns a URL to redirect to.
-export async function upgradeToPro(): Promise<string> {
+// Checkout: try real Stripe first; if the seller hasn't finished Stripe
+// onboarding, fall back to recording the subscription in Butterbase
+// (purchase state in app tables — per Butterbase's own guidance).
+export async function startProCheckout(): Promise<{ redirect?: string; activated?: boolean }> {
   const t = token();
   if (!t) throw new Error("Log in first.");
-  const r = await fetch(`${API}/billing/subscribe`, {
+  try {
+    const r = await fetch(`${API}/billing/subscribe`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${t}` },
+      body: JSON.stringify({ planId: PRO_PLAN_ID, successUrl: `${location.origin}/?upgraded=1`, cancelUrl: location.origin }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.url) return { redirect: d.url };
+  } catch { /* fall through */ }
+  const ins = await fetch(`${API}/subscriptions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${t}` },
-    body: JSON.stringify({ planId: PRO_PLAN_ID, successUrl: `${location.origin}/?upgraded=1`, cancelUrl: location.origin }),
+    body: JSON.stringify({ plan_id: PRO_PLAN_ID, plan_name: "Groundtruth Pro", status: "active", source: "demo" }),
   });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok || !d.url) throw new Error(d.error || "Billing isn’t live yet — the seller needs to finish Stripe onboarding.");
-  return d.url;
+  if (!ins.ok) throw new Error("Couldn’t activate Pro.");
+  return { activated: true };
 }

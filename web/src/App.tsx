@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
-  getReckoning, isPro, upgradeToPro,
+  getReckoning, isPro, startProCheckout,
   DEMO_NOW, type Insights, type PerceiveResult, type User, type CheckIn, type Reckoning,
 } from "./api";
 
@@ -228,18 +228,15 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
   );
 }
 
-function ReckoningCard({ reckoning, user, pro, onRequireAuth }: {
+function ReckoningCard({ reckoning, user, pro, onRequireAuth, onUpgraded }: {
   reckoning: Reckoning | null; user: User | null; pro: boolean;
   onRequireAuth: () => void; onUpgraded: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [checkout, setCheckout] = useState(false);
 
-  async function upgrade() {
+  function onUpgradeClick() {
     if (!user) { onRequireAuth(); return; }
-    setBusy(true); setErr(null);
-    try { location.href = await upgradeToPro(); }
-    catch (e) { setErr(String(e).replace("Error: ", "")); setBusy(false); }
+    setCheckout(true);
   }
 
   return (
@@ -266,13 +263,50 @@ function ReckoningCard({ reckoning, user, pro, onRequireAuth }: {
             <div>
               <div className="cta-title">🔒 Unlock your Reckoning</div>
               <div className="hint">Groundtruth Pro — $9/mo · coaching, unlimited live check-ins, full history.</div>
-              {err && <div className="err">{err}</div>}
             </div>
-            <button onClick={upgrade} disabled={busy}>{busy ? "…" : user ? "Upgrade to Pro" : "Log in to upgrade"}</button>
+            <button onClick={onUpgradeClick}>{user ? "Upgrade to Pro" : "Log in to upgrade"}</button>
           </div>
         </div>
       )}
+
+      {checkout && <CheckoutModal onClose={() => setCheckout(false)} onDone={() => { setCheckout(false); onUpgraded(); }} />}
     </section>
+  );
+}
+
+function CheckoutModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function pay() {
+    setBusy(true); setErr(null);
+    try {
+      const res = await startProCheckout();
+      if (res.redirect) { location.href = res.redirect; return; }
+      onDone();
+    } catch (e) { setErr(String(e).replace("Error: ", "")); setBusy(false); }
+  }
+
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Groundtruth Pro</h2>
+        <div className="price">$9<span>/mo</span></div>
+        <ul className="feat">
+          <li>Weekly Reckoning coaching</li>
+          <li>Unlimited live check-ins</li>
+          <li>Full week history + stored frames</li>
+        </ul>
+        <input className="card" value="4242 4242 4242 4242" readOnly />
+        <div className="cardrow">
+          <input value="12 / 34" readOnly />
+          <input value="123" readOnly />
+        </div>
+        {err && <div className="err">{err}</div>}
+        <button onClick={pay} disabled={busy}>{busy ? "Processing…" : "Subscribe · $9/mo"}</button>
+        <p className="switch2">Test mode — no real charge.</p>
+      </div>
+    </div>
   );
 }
 

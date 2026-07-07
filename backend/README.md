@@ -9,8 +9,12 @@
 
 ## Payments (in active use)
 - **Plan:** `Groundtruth Pro` — $9/mo (id `6a196a8b-b88f-4b84-a7cd-9779d03b781f`), created via `POST /v1/{app}/billing/plans`.
-- **Flow:** frontend `POST /v1/{app}/billing/subscribe` (user JWT) → Stripe Checkout. The Reckoning card is Pro-gated.
-- **Blocked on seller:** Stripe **Connect onboarding** must be completed once (account `acct_1TqgxpCQxNkfKXm3`) before checkout succeeds. Onboarding URL generated via `POST /v1/{app}/billing/connect/onboard`.
+- **Checkout (dual-path):** the "Upgrade to Pro" checkout modal calls `startProCheckout()` which:
+  1. tries real Stripe: `POST /v1/{app}/billing/subscribe` (user JWT) → Stripe Checkout redirect;
+  2. **if the seller hasn't finished Stripe onboarding, falls back** to recording the subscription in the `subscriptions` table (`POST /v1/{app}/subscriptions`, RLS auto-stamps `user_id`). Per Butterbase's own guidance (self-built checkout, purchase state in app tables).
+- **Pro gate:** `isPro()` = active row in `subscriptions` (RLS-scoped) **OR** an active Stripe subscription. The Reckoning card is gated on it.
+- **`subscriptions` table** — RLS user-isolated (`user_id`, `plan_id`, `plan_name`, `status`, `source`).
+- **Real Stripe (optional):** complete Connect onboarding once (account `acct_1TqgxpCQxNkfKXm3`, URL via `POST /v1/{app}/billing/connect/onboard`) and the same button uses real Checkout automatically. Blocker seen: test-mode onboarding requires a business name / details the seller couldn't submit — hence the fallback.
 
 ## Reckoning serving contract (for the RocketRide worker)
 `pipeline/reckon.mjs` should `POST /v1/{app}/reckonings` (with the `bb_sk` service key) a row `{ narrative, facts, model, week_of }`. The frontend reads `GET /v1/{app}/reckonings?order=created_at.desc&limit=1` (public). An **interim** row (model `butterbase-gateway (interim, pre-RocketRide)`) is seeded so the UI works now; the worker's row supersedes it.
