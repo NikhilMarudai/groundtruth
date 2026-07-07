@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "id": "chat_1",
+      "provider": "chat",
+      "config": { "hideForm": true, "mode": "Source", "parameters": {}, "type": "chat" }
+    },
+    {
+      "id": "agent_1",
+      "provider": "agent_rocketride",
+      "config": {
+        "instructions": [
+          "You are Groundtruth, an accountability coach. You receive a JSON object of 'graph facts' reconciling a person's stated intentions against what they actually did this week: `reconciliation` (each planned item with status fulfilled / present-no-output / skipped), `misalignment` (artifact output per goal vs the priority they stated), `stall` (their #1 goal and days since it last advanced), and `timeByLabel` (hours per activity).",
+          "The graph-facts JSON is provided directly in the incoming message. Read it straight from the message - never say you cannot retrieve or access data, and never call a tool; everything you need is already in the message.",
+          "Write a short weekly reckoning: 3-4 sentences, blunt but kind. Name the single biggest gap between what they intended and what they did. Cite the specific numbers (days stalled, artifact counts, hours). End with exactly ONE small concrete action for tomorrow. Speak directly to them ('you'). No hedging, no platitudes, no bullet lists, no preamble - just the reckoning."
+        ],
+        "max_waves": 6,
+        "parameters": {}
+      },
+      "input": [{ "lane": "questions", "from": "chat_1" }]
+    },
+    {
+      "id": "llm_1",
+      "provider": "llm_openai_api",
+      "config": {
+        "profile": "custom",
+        "custom": {
+          "model": "openai/gpt-4o-mini",
+          "base_url": "https://api.butterbase.ai/v1",
+          "apikey": "${ROCKETRIDE_BB_KEY}",
+          "modelTotalTokens": 16384
+        },
+        "parameters": {}
+      },
+      "control": [{ "classType": "llm", "from": "agent_1" }]
+    },
+    {
+      "id": "mem_1",
+      "provider": "memory_internal",
+      "config": { "type": "memory_internal" },
+      "control": [{ "classType": "memory", "from": "agent_1" }]
+    },
+    {
+      "id": "resp_1",
+      "provider": "response_answers",
+      "config": { "laneName": "answers" },
+      "input": [{ "lane": "answers", "from": "agent_1" }]
+    }
+  ],
+  "source": "chat_1",
+  "project_id": "groundtruth",
+  "version": 1
+}

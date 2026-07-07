@@ -1,49 +1,42 @@
-# pipeline/ — RocketRide Cloud: "The Reckoning"
+# pipeline/ — RocketRide Cloud: "The Reckoning" ✅ live
 
 RocketRide is the **reasoning layer** of Groundtruth:
 
 ```
-Neo4j (graph facts) ──▶ RocketRide Cloud pipeline (LLM coach) ──▶ Butterbase (stores + serves)
+Neo4j (graph facts) ─▶ /fn/insights ─▶ RocketRide Cloud pipeline ─▶ reckonings table ─▶ frontend (Pro-gated)
+                                        (LLM coach on Butterbase gateway)
 ```
 
-The `insights` function pulls reconciled facts from the graph; RocketRide turns those
-facts into a blunt-but-kind **weekly reckoning** narrative. Remove RocketRide and there's
-no coaching — just numbers. That's the load-bearing role.
+`reckon.mjs` pulls the reconciled facts, runs them through the deployed RocketRide Cloud
+pipeline (an LLM coach), and writes the resulting **weekly reckoning** narrative to the
+public `reckonings` table. Remove RocketRide and there's no coaching — just numbers.
 
-## Integration reality (important)
-RocketRide Cloud is invoked over a **WebSocket SDK protocol**, not REST. Endpoint
-`https://api.rocketride.ai`, auth via **API key** in the handshake. Butterbase's function
-runtime can't run that SDK, so the call lives in a small Node worker here
-([`reckon.mjs`](reckon.mjs)) that:
-1. pulls facts from `/fn/insights`,
-2. calls the deployed cloud pipeline via the `rocketride` SDK,
-3. writes the narrative into Butterbase `nudges` (kind `reckoning`),
-4. the frontend renders it.
+## What's deployed
+- **`the-reckoning.pipe`** — `chat → agent_rocketride (coach) → response_answers`, with
+  `memory_internal` + `llm_openai_api` attached to the agent. The LLM node points at
+  **Butterbase's OpenAI-compatible gateway** (`base_url: https://api.butterbase.ai/v1`,
+  `apikey: ${ROCKETRIDE_BB_KEY}`), so the coaching runs on the Butterbase AI credits — no
+  separate provider key.
+- Invoked over the RocketRide **WebSocket SDK** (`rocketride` npm), not REST:
+  `connect → use(.pipe) → chat(Question) → terminate`. Endpoint `https://api.rocketride.ai`,
+  API key `rr_…`.
 
-> First I'll try the undocumented HTTP endpoint the `webhook` node mints (printed to the
-> Project Log on deploy) — if a plain POST works, a Butterbase function can call RocketRide
-> directly and we skip the worker. The SDK worker is the guaranteed fallback.
+## Run it
+```bash
+set -a; source .env; set +a      # ROCKETRIDE_APIKEY (rr_…), ROCKETRIDE_BB_KEY (bb_sk_…)
+node pipeline/reckon.mjs         # facts → RocketRide → reckonings table
+```
+The frontend reads `GET /reckonings?order=created_at.desc&limit=1` and shows it in the
+Pro-gated Reckoning card. Re-run any time (e.g. live in the demo) to regenerate.
 
-## The pipeline (build in the VS Code extension, then deploy to Cloud)
-Nodes, wired left→right:
+## Files
+- `the-reckoning.pipe` — the deployed pipeline (portable JSON).
+- `reckon.mjs` — the worker (facts → pipeline → `reckonings`), retries transient socket drops.
+- `hello.pipe` — minimal webhook→response echo, for connectivity testing.
+- `coaching-prompt.md` — the coach's instructions (also embedded in the `.pipe`).
 
-1. **`webhook`** (Source) — receives the graph-facts JSON.
-2. **`agent_rocketride`** — the coach. Paste the system prompt from
-   [`coaching-prompt.md`](coaching-prompt.md) into its instructions.
-3. **`llm_openai`** (or `llm_anthropic`) — attached to the agent via a `control` link.
-   Key via `${ROCKETRIDE_OPENAI_KEY}` (or point base URL at Butterbase's gateway — TBC).
-4. **`response_text`** — returns the narrative.
-
-Deploy: in the extension, choose the **Cloud** server target (uri `https://api.rocketride.ai`,
-your API key), then `use()` the `.pipe`. Confirm it runs in the cloud dashboard.
-
-## Verify connectivity first
-Before building the full agent pipeline, deploy [`hello.pipe`](hello.pipe) (webhook →
-response_text, echoes input) to confirm your key + cloud round-trip work. Then build up.
-
-## What to send me once deployed
-- Your **RocketRide API key** (`ROCKETRIDE_APIKEY`).
-- The **project_id** the extension assigned (top of your `.pipe`).
-- The **webhook endpoint URL + auth key** printed to the Project Log (so I can try the direct-HTTP path).
-
-Then I finish `reckon.mjs`, wire the frontend "Reckoning" card, and we verify end-to-end.
+## Notes
+- The RocketRide cloud socket occasionally resets mid-handshake; `reckon.mjs` retries 3×.
+- Provider key note: `llm_openai_api` is the OpenAI-compatible node (also used for Nebius);
+  its `base_url` is what lets us reuse the Butterbase gateway.
+- Rotate the `rr_…` key after the hackathon (it's in `.env` + transcript).
