@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import LandingHero from "./LandingHero";
 import GraphView from "./GraphView";
 import DayView from "./DayView";
 import VisionView from "./VisionView";
@@ -56,6 +57,8 @@ export default function App() {
             : <button onClick={() => setAuthOpen(true)}>Log in</button>}
         </div>
       </header>
+
+      <LandingHero />
 
       {err && <div className="card err">Couldn’t load insights: {err}</div>}
 
