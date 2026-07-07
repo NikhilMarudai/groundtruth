@@ -2,143 +2,152 @@
 
 **HackwithBay 3.0 — "Graph-Aware Agentic Applications with Butterbase, Neo4j, and RocketRide Cloud"**
 Date: 2026-07-07 · Status: approved concept, pre-plan
-*(Supersedes `2026-07-07-latent-edge-design.md`, which is shelved as a fallback.)*
+*(Supersedes `2026-07-07-latent-edge-design.md`, shelved as a fallback. This revision pivots from synthetic reviews to real company-stack data.)*
 
 ---
 
 ## 1. One-liner
 
-**Kindred** is a universal "people-in-your-exact-situation" recommendation engine. Reviews today are broken because they average over strangers. Kindred models people, their context, and what they chose as a graph, finds the users whose **situation** matches yours (hard constraints + soft preferences), and re-sorts every review + synthesizes a verdict grounded in *only* those people's experiences — for any high-consideration decision. **Hero demo: picking a database/tech stack. Then the same engine flips live to a totally different domain (appliances) to prove it's category-agnostic.**
+**Kindred** is a **reference-architecture generator grounded in real companies.** You describe the product you want to build; Kindred finds real companies doing something similar, shows you the stacks they actually chose, and synthesizes a recommended architecture — **biased toward what the frontier is adopting**, so you build with cutting-edge tools instead of legacy defaults. "People like you" becomes **"companies like your idea,"** and their signal isn't opinions — it's their *revealed choices*, the tech they bet the company on.
 
-**The wow:** one engine, two wildly different domains, magical in both — with an explainable path, not a black-box score.
+**The wow:** type a one-line idea → watch the graph light up the companies building near you and converge on a modern, cited reference stack → scaffold it live in a sandbox. And it's the same engine, so it flips to any decision domain.
 
 ## 2. Problem
 
-Every high-stakes decision — which database, which bootcamp, which refrigerator — is drowned in reviews written by people who aren't you. A 4.2★ average blends the solo hacker and the Fortune-500 architect; the enterprise reviewer's "scales beautifully" is noise if you're prototyping on a free tier. The signal you want — *what did people in my exact situation choose, and what did they regret?* — is a **relationship** question (person → context → person → choice), which flat review sites and vector search can't answer and which ad networks answer only for advertisers, opaquely. Kindred answers it for the consumer, explainably.
+Picking a stack for a new project is guesswork drowned in noise. Generic "top 10 databases" listicles ignore your context; vendor docs are marketing; a 4.2★ tool rating blends the Fortune-500 architect and the solo hacker. The signal you actually want — *what did companies building something like my idea, recently, at my stage, actually choose?* — is a **relationship** question (idea → similar companies → their tools → why), locked inside scattered engineering blogs, job posts, and launch threads. StackShare tried to aggregate stacks but never matched them to *your idea*, never reasoned over the graph, and is effectively dead. Meanwhile the frontier moves fast: the best tools are what early-stage teams adopted last year, not what's been around for a decade. Kindred surfaces exactly that, explainably and with citations.
 
 ## 3. Why this fits the hackathon (all five sponsors load-bearing)
 
 | Tool | Role | Requirement |
 |---|---|---|
-| **Butterbase** | Backend: auth, DB (profiles, catalog, lookup history, subscriptions), AI gateway (Claude), **payment (Pro subscription)**, hosted React UI + `butterbase.dev` demo URL | ✅ database + auth + payment all active |
-| **Neo4j** | The recommendation graph. **GDS `nodeSimilarity`** builds "people like you" edges, **Louvain** finds tribes, constraint traversal filters candidates, weighted-neighbor aggregation ranks, and a path query *explains*. The traversal IS the product. | ✅ actively traversed + graph algorithms |
-| **RocketRide Cloud** | Two pipelines deployed to `cloud.rocketride.ai`: (a) onboarding text → structured profile; (b) matched-reviews retrieval → synthesized "Verdict for your situation" (GraphRAG). Called by Butterbase. | ✅ cloud-deployed managed endpoints |
-| **Cognee** *(bonus)* | Per-user memory: the evolving context profile + past decisions, recalled across sessions. Open-source Cognee, Neo4j backend. | 🎁 memory bonus |
-| **Daytona** *(bonus)* | For the dev-tools category: the agent spins up a sandbox and runs a quick benchmark/load-test to *prove* a recommended tool fits the user's use case — recommendation → verification. | 🎁 sandbox bonus |
+| **Butterbase** | Backend: auth, DB (users, saved projects, lookup history, subscriptions), AI gateway (Claude), **payment (Pro subscription)**, hosted React UI + `butterbase.dev` demo URL | ✅ database + auth + payment all active |
+| **Neo4j** | The company↔tool knowledge graph. **`nodeSimilarity`** matches your idea to companies, **tool co-occurrence + Louvain** finds coherent stack archetypes, **centrality** ranks hub tools per domain, and constraint traversal filters. The traversal + frontier-weighted ranking IS the product. | ✅ actively traversed + graph algorithms |
+| **RocketRide Cloud** | **Two** pipelines on `cloud.rocketride.ai`: (A) **curation** — company → web-search → extract {domain, stage, stack} with citations → graph (builds the seed); (B) **recommendation** — your idea → similar companies → synthesized, frontier-weighted reference architecture. | ✅ cloud-deployed managed endpoints |
+| **Cognee** *(bonus)* | Per-user memory: your project context + past explorations, recalled across sessions. Open-source Cognee, Neo4j backend. | 🎁 memory bonus |
+| **Daytona** *(bonus)* | Recommendation → running code: the agent scaffolds the recommended stack in a sandbox (skeleton repo, deps installed, boots) so you leave with a starting point, not just advice. | 🎁 sandbox bonus |
 
-**Deep-integration defense:** no graph = no "people like you" derivation; no RocketRide = no verdict synthesis; no Butterbase = no app/auth/payment. Pull any one and the product collapses.
+**Deep-integration defense:** no graph = no idea→company matching or stack archetypes; no RocketRide = no curation *and* no synthesis; no Butterbase = no app/auth/payment. Remove any one and the product collapses.
 
-## 4. The core mechanic (category-agnostic)
+## 4. The core mechanic
 
-Context-matched collaborative filtering on a graph, with **two kinds of edges doing two jobs**:
+**Idea-matched collaborative filtering on a graph of real companies**, with two kinds of edges:
 
-- **Hard constraints** (`must-be-serverless`, `fridge width ≤ 33″`, `budget ≤ $X`) → *filter* the candidate set. Non-negotiable.
-- **Soft preferences / context** (`relational data`, `solo team`, `prototyping`, `values-simplicity`) → *rank* by similarity to people like you.
+- **Hard constraints** (`must be open-source`, `self-hostable`, `budget ≤ $X/mo`, `no vendor lock-in`) → *filter* the tool candidate set. Non-negotiable.
+- **Soft context** (domain, what it does, stage/scale ambition, data shape) → *rank* by similarity to real companies.
 
-You then **borrow the verdicts of people who both fit your constraints and share your context.** The graph is category-agnostic: "dev tools" vs "appliances" is *just which `Item`s, `Attribute`s, and `Constraint`s are loaded* — the schema and algorithms don't change. That's what makes "anything fits" an architectural fact, not a slogan.
+Then **borrow the revealed stack choices of companies that both fit your constraints and resemble your idea**, weighted toward the frontier.
 
-**Why a graph, not vectors/SQL:** you're traversing `you → your context → people like you → what they chose → why`, and returning the **path** as the explanation. Vector similarity gives a black-box score; the graph gives the reason, which is the entire value proposition (and the "reasoning over connected data" the theme demands).
+**Frontier weighting (the differentiator, concretely implementable):** every `(Company)-[:USES {since, source}]->(Tool)` carries a recency/stage signal (company founding year, funding stage, when the signal was observed). A tool's score for you = its prevalence **among recent, early-stage, similar companies**, plus an **adoption-slope** term that boosts *rising* tools and buries legacy ones. That is what surfaces cutting-edge choices instead of decade-old defaults.
+
+**Why a graph, not vectors/SQL:** the output is a **path** — `your idea → these 6 similar companies → this recurring stack → why`, each edge citable. Vector similarity gives a black-box score; the graph gives the reasoning and the receipts, which is the whole value.
 
 ## 5. Neo4j graph model + algorithms
 
-**Nodes:** `(:User)`, `(:Category)`, `(:Item {name})`, `(:Attribute {name})`, `(:Constraint {name})`, `(:Review {text, rating})`, `(:Tribe)` *(materialized Louvain community)*.
+**Nodes:** `(:Company {name, founded, stage})`, `(:Tool {name, layer})`, `(:Domain {name})`, `(:Attribute {name})`, `(:Constraint {name})`, `(:Source {url, title})`, `(:StackArchetype)` *(materialized Louvain community)*, `(:Idea {...})` *(ephemeral, per-query — the user's project profile)*.
 
 **Relationships:**
-- `(:User)-[:HAS_CONTEXT {weight}]->(:Attribute)` — soft
-- `(:User)-[:REQUIRES]->(:Constraint)` — hard
-- `(:User)-[:WROTE]->(:Review)-[:OF]->(:Item)` with `(:Review)-[:RATED {stars}]`
-- `(:Item)-[:HAS]->(:Attribute)`, `(:Item)-[:SATISFIES|VIOLATES]->(:Constraint)`, `(:Item)-[:IN]->(:Category)`
-- `(:User)-[:SIMILAR_TO {score}]->(:User)` — **materialized by GDS `nodeSimilarity`**
-- `(:User)-[:MEMBER_OF]->(:Tribe)` — **materialized by Louvain**
+- `(:Company)-[:USES {since, confidence}]->(:Tool)` — the core signal, each backed by `-[:CITED_BY]->(:Source)`
+- `(:Company)-[:IN_DOMAIN]->(:Domain)`, `(:Company)-[:HAS_CONTEXT {weight}]->(:Attribute)`
+- `(:Tool)-[:SATISFIES|VIOLATES]->(:Constraint)`, `(:Tool)-[:AT_LAYER]->(layer: db/backend/frontend/infra/ai)`
+- `(:Company)-[:SIMILAR_TO {score}]->(:Company)` and `(:Idea)-[:SIMILAR_TO {score}]->(:Company)` — **GDS `nodeSimilarity`**
+- `(:Tool)-[:CO_OCCURS {count}]->(:Tool)` — derived; drives archetypes
+- `(:Company|:Tool)-[:MEMBER_OF]->(:StackArchetype)` — **Louvain**
 
-**Algorithms (the real graph-algorithm flex):**
-1. **`nodeSimilarity`** (Jaccard over shared `HAS_CONTEXT` attributes + co-rated items) → `SIMILAR_TO` edges = "people like you."
-2. **Louvain** over `SIMILAR_TO` → `Tribe` = your cohort (drives the "your tribe" visual).
-3. **Constraint-filtered, similarity-weighted ranking:** for user U + item I, aggregate the ratings of U's `SIMILAR_TO` neighbors who reviewed I, weighted by `score`, **excluding items that `VIOLATE` any of U's `REQUIRES`.**
-4. **Explanation path:** the shared-`Attribute` subgraph between U and the top-contributing neighbors → *"you and these 8 people all build relational + solo + budget-tight."*
+**Algorithms:**
+1. **`nodeSimilarity`** over `HAS_CONTEXT` + `IN_DOMAIN` → match the user's `Idea` node to companies.
+2. **Tool co-occurrence + Louvain** → coherent **stack archetypes** ("the modern AI-app stack"), so recommendations are *complete stacks*, not a bag of tools.
+3. **Centrality** (degree/PageRank) per domain → hub tools.
+4. **Frontier-weighted, constraint-filtered ranking** (see §4) → the final recommended stack, excluding anything that `VIOLATES` a `REQUIRES` constraint.
+5. **Explanation path:** `Idea → top similar Companies → shared Tools → Sources`.
 
-> Reliability decision: pre-registered, parameterized Cypher/GDS calls exposed as typed agent tools — the agent selects and fills them, it does not emit raw Cypher live.
+> Reliability: parameterized Cypher/GDS calls exposed as typed agent tools; the agent selects/fills them, never emits raw Cypher live.
 
 ## 6. Architecture & data flow
 
+**Build-time (pre-seed, run before the demo):**
 ```
-React UI (Butterbase-hosted, butterbase.dev) — onboarding quiz + review page + category switcher
-      │  profile / lookup + auth token
+Seed company list (~150) ─► RocketRide Pipeline A (curation, cloud):
+   for each company: web-search → extract {domain, stage, stack[] with sources} → validate → write to Neo4j
+   then: GDS nodeSimilarity (company↔company), CO_OCCURS, Louvain archetypes, centrality
+   → hand-verify the ~15 gold-path companies
+```
+
+**Run-time (live in the app):**
+```
+React UI (Butterbase-hosted) — "describe what you're building" + constraints
+      │  idea text + constraints + auth
       ▼
 Butterbase Function ── subscription gate (Free vs Pro) ──► 402 on Pro features if Free
       │
-      ├─(onboarding)─► RocketRide pipeline A: quiz text → structured {context attrs, constraints} → write to Neo4j + Cognee
+      └─► RocketRide Pipeline B (recommendation, cloud.rocketride.ai):
+             1. idea text → structured Idea profile {domain, context attrs, constraints}  (Claude)
+             2. Neo4j: match Idea→companies (nodeSimilarity), filter by constraints,
+                frontier-weighted rank of tools, pull archetype + citations  [GDS]
+             3. synthesize "Reference architecture for your idea" grounded in matched companies+sources (Claude)
+             4. return { stack[], per-tool rationale + citations, similar companies, path, archetype }
       │
-      └─(lookup)─────► RocketRide pipeline B (cloud.rocketride.ai):
-                          1. resolve user profile
-                          2. Neo4j: rank + re-sort reviews for item/query, filtered by constraints  [GDS]
-                          3. retrieve top-matched neighbors' review texts
-                          4. synthesize "Verdict for your situation" (Claude via Butterbase gateway, grounded ONLY in matched reviews)
-                          5. return { verdict, resorted_reviews[match%], tribe, path }
-      │
-      ├─► Butterbase DB: log lookup + verdict
-      ├─► Cognee: remember(profile, decision)          [Pro]
-      └─► Daytona: sandbox benchmark of recommended dev tool for the user's use case  [Pro, dev-tools only]
+      ├─► Butterbase DB: save project + result
+      ├─► Cognee: remember(idea, result)                    [Pro]
+      └─► Daytona: scaffold recommended stack in a sandbox   [Pro]
 ```
 
 ### Typed agent tools (Neo4j)
-`resolve_profile(user)` · `rank_reviews(user, item)` → sorted by match-% with constraint filter · `matched_neighbor_reviews(user, item, k)` → texts for GraphRAG · `tribe_of(user)` · `explain_match(user, neighbors)` → path.
+`match_companies(idea)` · `rank_tools(idea, constraints, frontier_weighting)` · `stack_archetype(idea)` · `citations_for(company, tool)` · `explain_match(idea, companies)`.
 
 ## 7. Butterbase backend
 
 - **Auth:** email + Google OAuth.
-- **Payment (Stripe, test mode):** **Free** = re-sorted reviews + match-% on ≤N lookups/day. **Pro** = the synthesized "Verdict for your situation" + unlimited + discovery feed + Cognee memory + Daytona verify. Gate enforced in a Butterbase function; the locked **"Verdict for you"** on Free → upgrade CTA → checkout → unlock is the live payment beat.
+- **Payment (Stripe, test mode):** **Free** = idea→similar-companies + their raw stacks on ≤N lookups/day. **Pro** = the synthesized frontier-weighted **reference architecture** + unlimited + Daytona scaffold + Cognee memory. The locked **"Generate my reference architecture"** on Free → upgrade CTA → checkout → unlock is the live payment beat.
 - **Schema (Butterbase Postgres — structured mirror; the graph lives in Neo4j):**
-  - `users` (auth) · `profiles` (user_id, category, context_json snapshot) · `subscriptions` (user_id, plan, stripe_status) · `lookups` (user_id, category, item_or_query, verdict_summary, created_at)
-- **AI gateway:** Claude for onboarding extraction + verdict synthesis.
+  - `users` (auth) · `projects` (user_id, idea_text, constraints_json, created_at) · `subscriptions` (user_id, plan, stripe_status) · `lookups` (user_id, project_id, result_summary, created_at)
+- **AI gateway:** Claude for idea extraction + architecture synthesis.
 
-## 8. Data seeding (synthetic, reliable, two categories)
+## 8. Data seeding — agentic web-search curation
 
-LLM-generate once, deterministic seed, load into Neo4j. Per category:
-- **Items:** ~20–40 (dev tools: Postgres, Mongo, DynamoDB, Supabase, Pinecone, etc. / appliances: fridges with real spec attributes).
-- **Personas:** ~150–250, each with a context profile + ≥1 hard constraint.
-- **Reviews:** each persona reviews ~5–15 items → ~1–2k reviews/category.
-- **Demo fixtures:** a pre-built **"you"** persona + **two deliberately contrasting** personas per category, so the *same review page visibly re-sorts differently* for a solo hacker vs. an enterprise architect.
+- **Method:** RocketRide Pipeline A curates a seed list of **~150 companies** where public stack signal is strong (YC/launch-covered startups, companies with "how we built X" eng blogs, active job posts). For each: web-search → extract `{domain, founded, stage, tools[] each with a source URL}`.
+- **Honesty:** every `USES` edge stores its `Source`. Framed in-product as **"publicly-observed stack,"** not internal ground truth — the citations are a trust feature.
+- **Frontier signal:** tag companies with founding year + stage so the ranking in §4 can weight recent/early-stage adoption.
+- **Gold path:** hand-verify the ~15 companies + the 2–3 demo ideas so the on-stage result is bulletproof.
+- **Generality flip:** a small **synthetic** appliance dataset (~20 items) proves the engine is category-agnostic without a second real-curation effort. Real where it matters, generic where it's just proof.
 
 ## 9. Demo script (~2 min)
 
-1. **Onboard** as a new dev: 6-tap quiz — building what, scale, team size, data shape, budget, must-haves. Profile built (RocketRide pipeline A → Neo4j + Cognee).
-2. Open the **"Postgres vs Mongo vs DynamoDB"** page. It **re-sorts live**: reviews from devs with your context float up tagged `92% match — solo, relational, budget-tight`; enterprise-scale reviews sink.
-3. **"Verdict for your situation"** (Pro-locked) → tap → **upgrade → Stripe checkout → unlocks** → agent writes: *"For a solo prototype on relational data with a tight budget, people like you overwhelmingly chose Postgres/Supabase — 4.7 for your cohort. Caveat your matches flag: RLS gets hairy if you add multi-tenancy."* Show the **tribe + path**.
-4. Toggle a **hard constraint** ("must be serverless") → violating options get filtered/flagged.
-5. *(Bonus)* **Daytona**: "prove it" → sandbox runs a quick load test for the use case.
-6. **THE FLIP:** "this isn't a dev-tools app — it's an engine." Switch category to **appliances**. Same screen, same magic: *"people with your kitchen constraints picked this fridge."* Cognee recalls you across the session.
+1. **Sign in.** Type an idea: *"a realtime collaborative whiteboard with AI agents, solo founder, tight budget, want to self-host later."* Set a hard constraint: **open-source / self-hostable.**
+2. Graph **lights up** the ~6 most similar real companies (Pipeline B → Neo4j `nodeSimilarity`); legacy-heavy or constraint-violating companies fade.
+3. **"Generate my reference architecture"** (Pro-locked) → **upgrade → Stripe checkout → unlocks** → the agent returns a **frontier-weighted stack** with per-tool rationale **and citations**: *"CRDT layer: Yjs — used by 4 of your 6 matches, all founded post-2022; DB: Postgres+Electric; realtime: Party­Kit… (legacy option Firebase down-ranked: older adopters, violates self-host)."* Show the **path + stack archetype**.
+4. *(Bonus)* **Daytona:** "scaffold it" → sandbox spins up a skeleton of that stack, installs deps, boots.
+5. **The flip:** "this isn't a stack tool — it's an engine." Switch to **appliances** (synthetic) → same screen, same magic. Cognee recalls your project next session.
 
-## 10. Build sequence & time budget (mandatory first; the flip is core, not bonus)
+## 10. Build sequence & time budget (mandatory first; curation pre-seed is on the critical path)
 
 | # | Task | Est |
 |---|---|---|
 | 0 | Provision Butterbase app + Neo4j Aura (GDS enabled) + repo + RocketRide project | 0.5h |
-| 1 | Generate hero-category seed data (LLM) → Neo4j ETL (nodes/edges/indexes) | 2.0h |
-| 2 | Neo4j: `nodeSimilarity` + Louvain + constraint-filtered ranking + explain, as typed tools | 1.5h |
-| 3 | RocketRide pipelines A (onboarding) + B (verdict); **deploy to cloud.rocketride.ai** | 2.0h |
-| 4 | Butterbase: auth, schema, onboarding write, subscription gate calling RocketRide | 1.5h |
-| 5 | Frontend: quiz + re-sorted review page + Verdict + match-% + category switcher; deploy `butterbase.dev` | 2.0h |
-| 6 | **Second category** seed + ETL (the generality flip) | 0.75h |
-| 7 | 🎁 Cognee memory · 🎁 Daytona benchmark (dev-tools) | 2.0h |
-| 8 | Gold-path rehearsal, polish, submit (`ENJOY0707` / `HackwithBay-0707`) | 1.0h |
+| 1 | **RocketRide Pipeline A (curation)** + Neo4j ETL/schema; run it to seed ~150 companies with citations; deploy to cloud | 2.5h |
+| 2 | Neo4j: `nodeSimilarity` + CO_OCCURS + Louvain archetypes + frontier-weighted ranking, as typed tools | 1.5h |
+| 3 | **RocketRide Pipeline B (recommendation)**; deploy to `cloud.rocketride.ai` | 1.5h |
+| 4 | Butterbase: auth, schema, idea intake, subscription gate calling Pipeline B | 1.5h |
+| 5 | Frontend: idea input + constraints + company graph + reference-architecture card w/ citations; deploy `butterbase.dev` | 2.0h |
+| 6 | Gold-path hand-verification (~15 companies, 2–3 demo ideas) + small synthetic appliance flip | 1.0h |
+| 7 | 🎁 Cognee memory · 🎁 Daytona scaffold | 2.0h |
+| 8 | Rehearsal, polish, submit (`ENJOY0707` / `HackwithBay-0707`) | 1.0h |
 
-**Cut-line order under time pressure (drop top-first):** Daytona → Cognee → Louvain tribe-viz polish → *(last resort)* live second-category flip (fall back to "generality is in the schema — here it is"). **Protected spine:** Butterbase auth+DB+payment, Neo4j GDS ranking, RocketRide Cloud endpoint, one clean re-sort + verdict, the payment beat. The **second-category flip ranks above both bonus tracks** because it's the core differentiator.
+**Cut-line order under time pressure (drop top-first):** Daytona → Cognee → Louvain-archetype polish → live appliance flip → shrink seed from 150 to ~60 companies. **Protected spine:** Butterbase auth+DB+payment, Neo4j GDS idea→company ranking, both RocketRide Cloud endpoints, one clean recommendation with citations, the payment beat.
 
 ## 11. Risks & mitigations
 
-- **Synthetic reviews feel fake** → generate with distinct persona voices + concrete specifics; curate the ~6 demo-visible reviews by hand. *Medium risk, mitigated by curating the gold path.*
-- **GDS setup friction on Aura** → confirm GDS availability at task 0; fall back to Cypher-computed Jaccard if GDS is unavailable. *Front-loaded.*
-- **RocketRide Cloud deploy friction** → deploy an empty pipeline first, iterate against the live endpoint. *Front-loaded.*
-- **Two categories = double data work** → the engine/frontend are shared; only seed data differs, and category 2 is a smaller seed. *Scoped + cut-line protected.*
-- **Live Cypher instability** → typed pre-registered tools, not free-form generation. *Mitigated by design.*
-- **8h is tight solo** → mandatory-first ordering + explicit cut-lines guarantee a submittable demo even if both bonuses drop.
+- **Data accuracy (top risk).** Public signals ≠ internal ground truth; LLM can mis-attribute a tool. → Store a `Source` on every `USES` edge, surface citations in-product, frame as "publicly-observed," and **hand-verify the gold path.** *Reframes a weakness into a trust feature.*
+- **Curation time.** Web-search curation of 150 companies is the long pole. → Pre-seed before demo (never live), parallelize the pipeline, and the cut-line drops to ~60 companies if needed. *Front-loaded + degradable.*
+- **GDS on Aura.** → Confirm GDS at task 0; fall back to Cypher-computed Jaccard if unavailable.
+- **RocketRide Cloud deploy friction.** → Deploy an empty pipeline first, iterate against the live endpoint.
+- **Idea→company match quality feels off on stage.** → Curate 2–3 demo ideas whose matches are hand-checked; free-form input is allowed but the gold path is rehearsed.
+- **8h is tight solo.** → Mandatory-first ordering + cut-lines guarantee a submittable demo even if both bonuses and the flip drop.
 
 ## 12. Success criteria
 
-- [ ] Live on `butterbase.dev` with working auth and a Free→Pro Stripe upgrade that actually gates the Verdict.
-- [ ] Neo4j re-sorts reviews by GDS-computed match-%, constraint-filtered, with an explainable path (+ at least one GDS algorithm: `nodeSimilarity` and/or Louvain).
-- [ ] RocketRide pipeline running as a managed endpoint on `cloud.rocketride.ai`, called by the app, synthesizing the verdict.
-- [ ] The **category flip** works live on a second domain with the same engine.
-- [ ] (Bonus) Cognee recalls the profile across sessions; (Bonus) Daytona returns a real benchmark for a dev-tool pick.
-- [ ] The full 2-minute demo runs on seeded data with zero live external dependency.
+- [ ] Live on `butterbase.dev` with working auth and a Free→Pro Stripe upgrade that gates the reference-architecture synthesis.
+- [ ] Neo4j matches an idea to real companies via GDS and produces a **frontier-weighted, constraint-filtered** stack with an explainable, **cited** path (≥1 GDS algorithm: `nodeSimilarity` + ideally Louvain archetypes).
+- [ ] **Both** RocketRide pipelines (curation + recommendation) deployed and running on `cloud.rocketride.ai`; the app calls the recommendation one live.
+- [ ] Real seed of ≥60 companies with source citations on their `USES` edges.
+- [ ] (Bonus) Cognee recalls a project across sessions; (Bonus) Daytona scaffolds the recommended stack.
+- [ ] The 2-minute demo runs on the seeded graph with zero live external dependency (curation is pre-run).
