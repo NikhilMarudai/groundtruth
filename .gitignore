@@ -8,3 +8,5 @@ frontend/dist/
 frontend.zip
 .pytest_cache/
 .gstack/
+web/dist/
+web/frontend.zip
