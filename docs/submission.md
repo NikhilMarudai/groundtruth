@@ -5,7 +5,7 @@
 - **Project name:** Groundtruth
 - **Demo URL:** https://groundtruth.butterbase.dev
 - **Butterbase app_id:** `app_c8rxilh0nxr6` (pass on submit — scores Butterbase feature usage)
-- **Repo:** (add link when pushed to GitHub)
+- **Repo:** https://github.com/NikhilMarudai/groundtruth
 
 ---
 
@@ -49,7 +49,7 @@
 
 **RocketRide Cloud (the coaching brain):** `the-reckoning.pipe` — `chat → agent_rocketride (coach) → response_answers` with an `llm_openai_api` node pointed at Butterbase's gateway — is deployed and invoked on **api.rocketride.ai** via the `rocketride` SDK (`connect → use → chat → terminate`; the SDK `use()` call is RocketRide's deployment path to Cloud). The worker (`pipeline/reckon.mjs`) feeds it the reconciled graph facts and writes the returned narrative to `reckonings`, which the Pro-gated card renders. Remove RocketRide and there's no coach — just numbers.
 
-**Optional tracks:** Cognee/Daytona — *(update before submit: state honestly what was/wasn't integrated)*.
+**Optional tracks (honest):** We did **not** integrate Cognee or Daytona in this build — we chose to make the three *mandatory* technologies deeply load-bearing rather than bolt on a shallow bonus. Cognee is the natural next step and already fits the architecture: cognify daily reflections into the *same* Neo4j graph so the agent can answer multi-hop history questions ("when do I actually do deep work?") across months — the "GraphRAG over your own life" roadmap noted above. Daytona has no natural role here (the agent reasons over a graph; it doesn't execute code).
 
 ## Demo script (90 seconds)
 1. Open groundtruth.butterbase.dev → the stall hero: *"Ship thesis draft hasn't advanced in 4 days."*
