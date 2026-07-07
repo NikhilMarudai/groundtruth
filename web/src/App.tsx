@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import LandingHero from "./LandingHero";
+import ScenariosView from "./ScenariosView";
 import GraphView from "./GraphView";
 import DayView from "./DayView";
 import VisionView from "./VisionView";
@@ -59,6 +60,8 @@ export default function App() {
       </header>
 
       <LandingHero />
+
+      <ScenariosView />
 
       {err && <div className="card err">Couldn’t load insights: {err}</div>}
 
