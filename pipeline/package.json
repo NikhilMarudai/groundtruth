@@ -1,0 +1,11 @@
+{
+  "name": "groundtruth-pipeline",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "RocketRide Cloud 'Reckoning' worker for Groundtruth",
+  "scripts": { "reckon": "node reckon.mjs" },
+  "dependencies": {
+    "rocketride": "*"
+  }
+}
