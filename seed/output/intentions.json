@@ -1,0 +1,90 @@
+[
+  {
+    "id": "i_0_0",
+    "date": "2026-06-29",
+    "title": "Deep work: thesis ch3",
+    "planStart": "2026-06-29T09:00:00",
+    "planEnd": "2026-06-29T12:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_0_1",
+    "date": "2026-06-29",
+    "title": "Gym",
+    "planStart": "2026-06-29T17:00:00",
+    "planEnd": "2026-06-29T18:00:00",
+    "projectId": "p_fit"
+  },
+  {
+    "id": "i_1_0",
+    "date": "2026-06-30",
+    "title": "Deep work: thesis ch3",
+    "planStart": "2026-06-30T09:00:00",
+    "planEnd": "2026-06-30T12:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_2_0",
+    "date": "2026-07-01",
+    "title": "Side project sprint",
+    "planStart": "2026-07-01T10:00:00",
+    "planEnd": "2026-07-01T13:00:00",
+    "projectId": "p_side"
+  },
+  {
+    "id": "i_2_1",
+    "date": "2026-07-01",
+    "title": "Thesis review",
+    "planStart": "2026-07-01T15:00:00",
+    "planEnd": "2026-07-01T16:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_3_0",
+    "date": "2026-07-02",
+    "title": "Deep work: thesis",
+    "planStart": "2026-07-02T09:00:00",
+    "planEnd": "2026-07-02T11:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_3_1",
+    "date": "2026-07-02",
+    "title": "Gym",
+    "planStart": "2026-07-02T17:30:00",
+    "planEnd": "2026-07-02T18:30:00",
+    "projectId": "p_fit"
+  },
+  {
+    "id": "i_4_0",
+    "date": "2026-07-03",
+    "title": "Deep work: thesis ch4",
+    "planStart": "2026-07-03T09:00:00",
+    "planEnd": "2026-07-03T12:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_5_0",
+    "date": "2026-07-04",
+    "title": "Long run",
+    "planStart": "2026-07-04T09:00:00",
+    "planEnd": "2026-07-04T10:00:00",
+    "projectId": "p_fit"
+  },
+  {
+    "id": "i_6_0",
+    "date": "2026-07-05",
+    "title": "Deep work: thesis",
+    "planStart": "2026-07-05T10:00:00",
+    "planEnd": "2026-07-05T12:00:00",
+    "projectId": "p_thesis"
+  },
+  {
+    "id": "i_6_1",
+    "date": "2026-07-05",
+    "title": "Weekly review + plan",
+    "planStart": "2026-07-05T19:00:00",
+    "planEnd": "2026-07-05T20:00:00",
+    "projectId": "p_admin"
+  }
+]

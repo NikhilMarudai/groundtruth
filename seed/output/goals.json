@@ -1,0 +1,17 @@
+[
+  {
+    "id": "g_thesis",
+    "title": "Ship thesis draft",
+    "priority": 1
+  },
+  {
+    "id": "g_side",
+    "title": "Launch side project",
+    "priority": 2
+  },
+  {
+    "id": "g_fit",
+    "title": "Get fit",
+    "priority": 3
+  }
+]

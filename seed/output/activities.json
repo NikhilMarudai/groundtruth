@@ -1,0 +1,578 @@
+[
+  {
+    "id": "a_0_0",
+    "start": "2026-06-29T00:00:00",
+    "end": "2026-06-29T07:00:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_1",
+    "start": "2026-06-29T07:00:00",
+    "end": "2026-06-29T07:40:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_2",
+    "start": "2026-06-29T07:40:00",
+    "end": "2026-06-29T08:10:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_3",
+    "start": "2026-06-29T09:05:00",
+    "end": "2026-06-29T11:50:00",
+    "label": "Working",
+    "confidence": 0.9,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_4",
+    "start": "2026-06-29T12:00:00",
+    "end": "2026-06-29T12:40:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_5",
+    "start": "2026-06-29T13:15:00",
+    "end": "2026-06-29T16:30:00",
+    "label": "Working",
+    "confidence": 0.88,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_6",
+    "start": "2026-06-29T17:05:00",
+    "end": "2026-06-29T18:00:00",
+    "label": "Exercising",
+    "confidence": 0.92,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_7",
+    "start": "2026-06-29T18:30:00",
+    "end": "2026-06-29T19:10:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_8",
+    "start": "2026-06-29T20:00:00",
+    "end": "2026-06-29T22:45:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_0_9",
+    "start": "2026-06-29T23:00:00",
+    "end": "2026-06-29T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_0",
+    "start": "2026-06-30T00:00:00",
+    "end": "2026-06-30T07:30:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_1",
+    "start": "2026-06-30T07:30:00",
+    "end": "2026-06-30T08:00:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_2",
+    "start": "2026-06-30T08:00:00",
+    "end": "2026-06-30T08:30:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_3",
+    "start": "2026-06-30T09:10:00",
+    "end": "2026-06-30T10:30:00",
+    "label": "Working",
+    "confidence": 0.72,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_4",
+    "start": "2026-06-30T10:30:00",
+    "end": "2026-06-30T11:20:00",
+    "label": "Leisure",
+    "confidence": 0.78,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_5",
+    "start": "2026-06-30T11:20:00",
+    "end": "2026-06-30T12:40:00",
+    "label": "Away",
+    "confidence": 0.9,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_6",
+    "start": "2026-06-30T12:40:00",
+    "end": "2026-06-30T13:20:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_7",
+    "start": "2026-06-30T13:30:00",
+    "end": "2026-06-30T16:00:00",
+    "label": "Leisure",
+    "confidence": 0.82,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_8",
+    "start": "2026-06-30T16:15:00",
+    "end": "2026-06-30T17:30:00",
+    "label": "Working",
+    "confidence": 0.86,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_9",
+    "start": "2026-06-30T19:00:00",
+    "end": "2026-06-30T23:00:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_1_10",
+    "start": "2026-06-30T23:15:00",
+    "end": "2026-06-30T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_0",
+    "start": "2026-07-01T00:00:00",
+    "end": "2026-07-01T07:15:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_1",
+    "start": "2026-07-01T07:15:00",
+    "end": "2026-07-01T07:45:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_2",
+    "start": "2026-07-01T07:45:00",
+    "end": "2026-07-01T08:15:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_3",
+    "start": "2026-07-01T09:30:00",
+    "end": "2026-07-01T13:10:00",
+    "label": "Working",
+    "confidence": 0.9,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_4",
+    "start": "2026-07-01T13:15:00",
+    "end": "2026-07-01T13:50:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_5",
+    "start": "2026-07-01T14:00:00",
+    "end": "2026-07-01T17:45:00",
+    "label": "Working",
+    "confidence": 0.9,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_6",
+    "start": "2026-07-01T18:30:00",
+    "end": "2026-07-01T19:15:00",
+    "label": "Chores",
+    "confidence": 0.75,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_7",
+    "start": "2026-07-01T19:15:00",
+    "end": "2026-07-01T19:50:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_8",
+    "start": "2026-07-01T20:30:00",
+    "end": "2026-07-01T23:00:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_2_9",
+    "start": "2026-07-01T23:10:00",
+    "end": "2026-07-01T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_0",
+    "start": "2026-07-02T00:00:00",
+    "end": "2026-07-02T07:00:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_1",
+    "start": "2026-07-02T07:00:00",
+    "end": "2026-07-02T07:30:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_2",
+    "start": "2026-07-02T07:30:00",
+    "end": "2026-07-02T08:00:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_3",
+    "start": "2026-07-02T09:00:00",
+    "end": "2026-07-02T10:15:00",
+    "label": "Working",
+    "confidence": 0.7,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_4",
+    "start": "2026-07-02T10:30:00",
+    "end": "2026-07-02T12:00:00",
+    "label": "Chores",
+    "confidence": 0.75,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_5",
+    "start": "2026-07-02T12:15:00",
+    "end": "2026-07-02T12:50:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_6",
+    "start": "2026-07-02T13:30:00",
+    "end": "2026-07-02T16:45:00",
+    "label": "Working",
+    "confidence": 0.88,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_7",
+    "start": "2026-07-02T17:35:00",
+    "end": "2026-07-02T18:35:00",
+    "label": "Exercising",
+    "confidence": 0.92,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_8",
+    "start": "2026-07-02T19:00:00",
+    "end": "2026-07-02T19:40:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_9",
+    "start": "2026-07-02T20:30:00",
+    "end": "2026-07-02T23:00:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_3_10",
+    "start": "2026-07-02T23:15:00",
+    "end": "2026-07-02T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_0",
+    "start": "2026-07-03T00:00:00",
+    "end": "2026-07-03T07:20:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_1",
+    "start": "2026-07-03T07:20:00",
+    "end": "2026-07-03T07:50:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_2",
+    "start": "2026-07-03T07:50:00",
+    "end": "2026-07-03T08:20:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_3",
+    "start": "2026-07-03T09:20:00",
+    "end": "2026-07-03T11:45:00",
+    "label": "Working",
+    "confidence": 0.9,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_4",
+    "start": "2026-07-03T12:00:00",
+    "end": "2026-07-03T12:40:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_5",
+    "start": "2026-07-03T13:00:00",
+    "end": "2026-07-03T15:30:00",
+    "label": "Working",
+    "confidence": 0.88,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_6",
+    "start": "2026-07-03T16:00:00",
+    "end": "2026-07-03T18:00:00",
+    "label": "Leisure",
+    "confidence": 0.82,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_7",
+    "start": "2026-07-03T18:30:00",
+    "end": "2026-07-03T19:10:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_8",
+    "start": "2026-07-03T20:00:00",
+    "end": "2026-07-03T23:30:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_4_9",
+    "start": "2026-07-03T23:40:00",
+    "end": "2026-07-03T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_0",
+    "start": "2026-07-04T00:00:00",
+    "end": "2026-07-04T08:30:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_1",
+    "start": "2026-07-04T08:30:00",
+    "end": "2026-07-04T09:00:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_2",
+    "start": "2026-07-04T09:10:00",
+    "end": "2026-07-04T10:05:00",
+    "label": "Exercising",
+    "confidence": 0.92,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_3",
+    "start": "2026-07-04T10:30:00",
+    "end": "2026-07-04T11:15:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_4",
+    "start": "2026-07-04T11:30:00",
+    "end": "2026-07-04T13:00:00",
+    "label": "Chores",
+    "confidence": 0.75,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_5",
+    "start": "2026-07-04T13:30:00",
+    "end": "2026-07-04T17:00:00",
+    "label": "Leisure",
+    "confidence": 0.82,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_6",
+    "start": "2026-07-04T18:00:00",
+    "end": "2026-07-04T18:45:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_7",
+    "start": "2026-07-04T19:00:00",
+    "end": "2026-07-04T23:30:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_5_8",
+    "start": "2026-07-04T23:40:00",
+    "end": "2026-07-04T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_0",
+    "start": "2026-07-05T00:00:00",
+    "end": "2026-07-05T08:00:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_1",
+    "start": "2026-07-05T08:00:00",
+    "end": "2026-07-05T08:30:00",
+    "label": "Personal care",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_2",
+    "start": "2026-07-05T08:30:00",
+    "end": "2026-07-05T09:00:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_3",
+    "start": "2026-07-05T09:30:00",
+    "end": "2026-07-05T11:30:00",
+    "label": "Leisure",
+    "confidence": 0.82,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_4",
+    "start": "2026-07-05T12:00:00",
+    "end": "2026-07-05T12:40:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_5",
+    "start": "2026-07-05T13:00:00",
+    "end": "2026-07-05T16:00:00",
+    "label": "Working",
+    "confidence": 0.88,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_6",
+    "start": "2026-07-05T16:30:00",
+    "end": "2026-07-05T17:30:00",
+    "label": "Chores",
+    "confidence": 0.75,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_7",
+    "start": "2026-07-05T18:00:00",
+    "end": "2026-07-05T18:40:00",
+    "label": "Eating",
+    "confidence": 0.85,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_8",
+    "start": "2026-07-05T19:00:00",
+    "end": "2026-07-05T20:00:00",
+    "label": "Working",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_9",
+    "start": "2026-07-05T20:15:00",
+    "end": "2026-07-05T22:45:00",
+    "label": "Leisure",
+    "confidence": 0.8,
+    "source": "seed"
+  },
+  {
+    "id": "a_6_10",
+    "start": "2026-07-05T23:00:00",
+    "end": "2026-07-05T23:59:00",
+    "label": "Sleeping",
+    "confidence": 0.95,
+    "source": "seed"
+  }
+]

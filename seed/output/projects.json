@@ -1,0 +1,22 @@
+[
+  {
+    "id": "p_thesis",
+    "title": "Thesis",
+    "goalId": "g_thesis"
+  },
+  {
+    "id": "p_side",
+    "title": "Side project (Jarvis)",
+    "goalId": "g_side"
+  },
+  {
+    "id": "p_fit",
+    "title": "Fitness",
+    "goalId": "g_fit"
+  },
+  {
+    "id": "p_admin",
+    "title": "Admin / life",
+    "goalId": null
+  }
+]
