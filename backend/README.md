@@ -19,7 +19,11 @@
 | Name | Route | Auth | What |
 |---|---|---|---|
 | `insights` | `GET /fn/insights?now=<iso>` | none | Queries the Neo4j life graph over the HTTPS Query API → `{ reconciliation, misalignment, stall, timeByLabel }`. Source: [`functions/insights.ts`](functions/insights.ts). |
-| `perceive` | `POST /fn/perceive` | **required (JWT)** | `{ image_url\|image_base64, now? }` → BB vision label → `camera_events` row + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision. Runs as the end user; `user_id` auto-populated by the RLS trigger. |
+| `perceive` | `POST /fn/perceive` | **required (JWT)** | `{ image_url\|image_base64, now? }` → BB vision label + **stores the frame to Storage** (classify + upload run in parallel) → `camera_events` row (incl. `image_object_id`) + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision. Runs as the end user; `user_id` auto-populated by the RLS trigger. |
+
+> **Frames are persisted:** each read is saved to Butterbase Storage (public per-object) and its `objectId` stored on the row; the frontend mints a presigned download URL to show a thumbnail in the (RLS-scoped) check-in history. Good for demo replay + labelled training data.
+>
+> **⚠️ Cold start:** the first `perceive` call after a redeploy or idle period can be very slow (one 79s → 504 seen right after deploy); warm calls are ~7-9s. **Warm the function with one throwaway call before demoing.**
 
 ## Auth & RLS (in active use)
 - **Auth:** email/password signup + login via `/auth/{app_id}/*` (JWT). The frontend gates the live camera + personal history behind login; `perceive` is `auth: required`.

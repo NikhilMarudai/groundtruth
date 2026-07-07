@@ -1,8 +1,10 @@
-// Butterbase serverless function: the live-perception loop.
-// image -> BB vision gateway -> activity label -> (1) camera_events row,
-// (2) a live Activity node inserted into the Neo4j graph at `now`, then
-// (3) a contextual nudge reasoned from the graph (what was planned for this
-// slot + how many times you've done this today) -> nudges row + response.
+// Butterbase serverless function: the live-perception loop (auth required).
+// image -> [BB vision classify  ||  store frame to Storage] -> camera_events row
+// (with image_object_id) + live Activity node in Neo4j -> contextual nudge.
+//
+// The frame is saved to Butterbase Storage (public per-object) so the demo is
+// replayable and we keep labelled images for later. Vision + upload run in
+// parallel so storage adds ~no latency. user_id auto-populated from the JWT.
 //
 // POST /fn/perceive  { image_url? | image_base64?, now? }
 // envVars: NEO4J_HTTP, NEO4J_USER, NEO4J_PASSWORD, BUTTERBASE_API_KEY
@@ -19,12 +21,10 @@ export default async function handler(req, ctx) {
 
   let body = {};
   try { body = await req.json(); } catch (_) {}
-  const now = body.now || "2026-07-03T10:00:00"; // Fri, inside the 09-12 thesis block
+  const now = body.now || "2026-07-03T10:00:00";
   const date = now.slice(0, 10);
   const imageUrl = body.image_url || (body.image_base64 ? `data:image/jpeg;base64,${body.image_base64}` : null);
-  if (!imageUrl) {
-    return json({ error: "provide image_url or image_base64" }, 400);
-  }
+  if (!imageUrl) return json({ error: "provide image_url or image_base64" }, 400);
 
   const neoAuth = "Basic " + btoa(`${NEO4J_USER}:${NEO4J_PASSWORD}`);
   async function cypher(statement, parameters = {}) {
@@ -39,14 +39,13 @@ export default async function handler(req, ctx) {
     return values.map((row) => Object.fromEntries(fields.map((f, i) => [f, row[i]])));
   }
 
-  try {
-    // 1) Vision: classify the frame (low detail — coarse activity, ~9x cheaper).
+  // Vision classification.
+  async function classify() {
     const vr = await fetch(`${BUTTERBASE_API_URL}/v1/${BUTTERBASE_APP_ID}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${BUTTERBASE_API_KEY}` },
       body: JSON.stringify({
-        model,
-        max_tokens: 120,
+        model, max_tokens: 120,
         messages: [
           { role: "system", content: SYS },
           { role: "user", content: [
@@ -59,18 +58,47 @@ export default async function handler(req, ctx) {
     const vj = await vr.json();
     if (!vr.ok) throw new Error(`vision ${vr.status}: ${JSON.stringify(vj.error || vj)}`);
     const raw = vj.choices?.[0]?.message?.content?.trim() || "{}";
-    const parsed = JSON.parse(raw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim());
+    return JSON.parse(raw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim());
+  }
+
+  // Best-effort: persist the frame to Storage; returns objectId or null.
+  async function storeFrame() {
+    try {
+      let bytes, contentType = "image/jpeg";
+      if (body.image_base64) {
+        const bin = atob(body.image_base64);
+        bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      } else {
+        const ir = await fetch(imageUrl);
+        if (!ir.ok) return null;
+        bytes = new Uint8Array(await ir.arrayBuffer());
+        contentType = ir.headers.get("content-type") || "image/jpeg";
+      }
+      const up = await fetch(`${BUTTERBASE_API_URL}/storage/${BUTTERBASE_APP_ID}/upload`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${BUTTERBASE_API_KEY}` },
+        body: JSON.stringify({ filename: `frame_${Date.now()}.jpg`, contentType, sizeBytes: bytes.length, public: true }),
+      });
+      const uj = await up.json();
+      if (!up.ok || !uj.uploadUrl) return null;
+      const put = await fetch(uj.uploadUrl, { method: "PUT", headers: { "Content-Type": contentType }, body: bytes });
+      return put.ok ? uj.objectId : null;
+    } catch { return null; }
+  }
+
+  try {
+    // Classify and store the frame concurrently — storage adds ~no latency.
+    const [parsed, imageObjectId] = await Promise.all([classify(), storeFrame()]);
     const label = parsed.label || "Away";
     const confidence = typeof parsed.confidence === "number" ? parsed.confidence : null;
     const reason = parsed.reason || "";
 
-    // 2) Persist the raw perception event.
     await ctx.db.query(
-      "INSERT INTO camera_events (label, confidence, reason) VALUES ($1, $2, $3)",
-      [label, confidence, reason]
+      "INSERT INTO camera_events (label, confidence, reason, image_object_id) VALUES ($1, $2, $3, $4)",
+      [label, confidence, reason, imageObjectId]
     );
 
-    // 3) Insert a live Activity node into the graph at `now`.
     const id = "live_" + Date.now();
     await cypher(
       `CREATE (a:Activity {id:$id, label:$label, confidence:$conf, start:datetime($now), end:datetime($now), source:'live'})
@@ -78,18 +106,18 @@ export default async function handler(req, ctx) {
       { id, label, conf: confidence, now, date }
     );
 
-    // 4) Reason from the graph: what was planned for this slot, and how many
-    //    times have you done this activity today?
-    const intendedRows = await cypher(
-      `MATCH (i:Intention)-[:INTENDED_FOR]->(p:Project)
-       WHERE i.planStart <= datetime($now) AND i.planEnd > datetime($now)
-       RETURN i.title AS intended, p.title AS project LIMIT 1`,
-      { now }
-    );
-    const countRows = await cypher(
-      `MATCH (a:Activity)-[:ON]->(:Day {id:$date}) WHERE a.label = $label RETURN count(a) AS n`,
-      { date, label }
-    );
+    const [intendedRows, countRows] = await Promise.all([
+      cypher(
+        `MATCH (i:Intention)-[:INTENDED_FOR]->(p:Project)
+         WHERE i.planStart <= datetime($now) AND i.planEnd > datetime($now)
+         RETURN i.title AS intended, p.title AS project LIMIT 1`,
+        { now }
+      ),
+      cypher(
+        `MATCH (a:Activity)-[:ON]->(:Day {id:$date}) WHERE a.label = $label RETURN count(a) AS n`,
+        { date, label }
+      ),
+    ]);
     const intended = intendedRows[0]?.intended || null;
     const project = intendedRows[0]?.project || null;
     const n = countRows[0]?.n ?? 1;
@@ -107,19 +135,17 @@ export default async function handler(req, ctx) {
       severity = "info";
     }
 
-    // 5) Persist the nudge.
     await ctx.db.query(
       "INSERT INTO nudges (kind, title, body, severity, meta) VALUES ($1, $2, $3, $4, $5)",
       ["live", `Live check: ${label}`, nudge, severity, JSON.stringify({ now, label, confidence, intended })]
     );
 
-    return json({ label, confidence, reason, now, intended, project, todayCount: n, nudge, severity });
+    return json({ label, confidence, reason, now, intended, project, todayCount: n, nudge, severity, imageObjectId });
   } catch (e) {
     return json({ error: String(e?.message || e) }, 500);
   }
 }
 
-// A Working block "counts" toward a work intention; Exercising counts toward fitness.
 function isProductiveMatch(label, project) {
   if (!project) return false;
   if (project === "Fitness") return label === "Exercising";

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  getInsights, perceive, getMyCheckins, currentUser, login, signup, logout,
+  getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
   getReckoning, isPro, upgradeToPro,
   DEMO_NOW, type Insights, type PerceiveResult, type User, type CheckIn, type Reckoning,
 } from "./api";
@@ -129,8 +129,17 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
   const [res, setRes] = useState<PerceiveResult | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [history, setHistory] = useState<CheckIn[]>([]);
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
-  useEffect(() => { if (user) getMyCheckins().then(setHistory); else setHistory([]); }, [user]);
+  async function loadHistory() {
+    const rows = await getMyCheckins();
+    setHistory(rows);
+    const pairs = await Promise.all(
+      rows.filter((r) => r.image_object_id).map(async (r) => [r.image_object_id!, await getDownloadUrl(r.image_object_id!)] as const)
+    );
+    setThumbs(Object.fromEntries(pairs.filter(([, u]) => u)));
+  }
+  useEffect(() => { if (user) loadHistory(); else { setHistory([]); setThumbs({}); } }, [user]);
 
   async function startCam() {
     try {
@@ -153,7 +162,7 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
     setBusy(true); setErr(null); setRes(null);
     try {
       setRes(await perceive(input));
-      getMyCheckins().then(setHistory);
+      loadHistory();
     } catch (e) { setErr(String(e).replace("Error: ", "")); }
     finally { setBusy(false); }
   }
@@ -192,7 +201,12 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
             <span className="hint">your recent check-ins (RLS-scoped to you):</span>
             <ul>
               {history.map((h) => (
-                <li key={h.id}><b>{h.label}</b> <span className="hdim">{h.reason}</span></li>
+                <li key={h.id}>
+                  {h.image_object_id && thumbs[h.image_object_id]
+                    ? <img className="thumb" src={thumbs[h.image_object_id]} alt={h.label} />
+                    : <span className="thumb ph" />}
+                  <b>{h.label}</b> <span className="hdim">{h.reason}</span>
+                </li>
               ))}
             </ul>
           </div>

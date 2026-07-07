@@ -31,7 +31,7 @@ export type PerceiveResult = {
 export type User = { id: string; email: string; display_name?: string | null };
 export type CheckIn = {
   id: string; label: string; confidence: number | null;
-  reason: string | null; created_at: string;
+  reason: string | null; created_at: string; image_object_id: string | null;
 };
 
 // --- auth state (localStorage) ---------------------------------------------
@@ -109,6 +109,18 @@ export async function getMyCheckins(): Promise<CheckIn[]> {
   });
   if (!r.ok) return [];
   return r.json();
+}
+
+// Mint a fresh presigned download URL for a stored frame (expires ~1h).
+export async function getDownloadUrl(objectId: string): Promise<string | null> {
+  const t = token();
+  if (!t || !objectId) return null;
+  const r = await fetch(`https://api.butterbase.ai/storage/${APP_ID}/download/${objectId}`, {
+    headers: { Authorization: `Bearer ${t}` },
+  });
+  if (!r.ok) return null;
+  const d = await r.json().catch(() => null);
+  return d?.downloadUrl ?? null;
 }
 
 // --- Reckoning (RocketRide coaching narrative) + payment -------------------

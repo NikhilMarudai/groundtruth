@@ -29,8 +29,10 @@ button.ghost { background: transparent; color: var(--dim); border: 1px solid var
 
 .history { margin-top: 16px; }
 .history ul { list-style: none; margin: 6px 0 0; padding: 0; }
-.history li { font-size: 13px; padding: 3px 0; border-bottom: 1px solid var(--line); }
+.history li { font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
 .hdim { color: var(--dim); }
+.thumb { width: 40px; height: 30px; object-fit: cover; border-radius: 5px; border: 1px solid var(--line); flex: none; }
+.thumb.ph { background: var(--panel2); }
 
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10; }
 .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; width: 340px; max-width: 92vw; }
