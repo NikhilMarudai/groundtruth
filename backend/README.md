@@ -10,6 +10,9 @@
 | Name | Route | Auth | What |
 |---|---|---|---|
 | `insights` | `GET /fn/insights?now=<iso>` | none | Queries the Neo4j life graph over the HTTPS Query API → `{ reconciliation, misalignment, stall, timeByLabel }`. Source: [`functions/insights.ts`](functions/insights.ts). |
+| `perceive` | `POST /fn/perceive` | none | `{ image_url\|image_base64, now? }` → BB vision label → `camera_events` row + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision (~9× cheaper). |
+
+> Note: `perceive` inserts a live `Activity {source:"live"}` node per call. To reset the graph to the clean seed, rerun `npm --prefix graph run load`.
 
 ### Redeploy a function
 Deploy via the Butterbase `deploy_function` MCP tool with `envVars` set. `insights` needs:
