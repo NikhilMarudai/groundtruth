@@ -7,3 +7,4 @@ seed/companies.json
 frontend/dist/
 frontend.zip
 .pytest_cache/
+.gstack/
