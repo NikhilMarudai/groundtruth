@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import {
   getInsights, perceive, getMyCheckins, currentUser, login, signup, logout,
-  DEMO_NOW, type Insights, type PerceiveResult, type User, type CheckIn,
+  getReckoning, isPro, upgradeToPro,
+  DEMO_NOW, type Insights, type PerceiveResult, type User, type CheckIn, type Reckoning,
 } from "./api";
 
 const STATUS_META: Record<string, { color: string; label: string }> = {
@@ -21,10 +22,21 @@ export default function App() {
   const [err, setErr] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(currentUser());
   const [authOpen, setAuthOpen] = useState(false);
+  const [reckoning, setReckoning] = useState<Reckoning | null>(null);
+  const [pro, setPro] = useState(false);
 
   useEffect(() => {
     getInsights(DEMO_NOW).then(setIns).catch((e) => setErr(String(e)));
+    getReckoning().then(setReckoning);
   }, []);
+
+  useEffect(() => {
+    if (!user) { setPro(false); return; }
+    isPro().then(setPro);
+    if (new URLSearchParams(location.search).get("upgraded")) {
+      history.replaceState({}, "", location.pathname);
+    }
+  }, [user]);
 
   const stall = ins?.stall?.[0];
   const maxHours = Math.max(1, ...(ins?.timeByLabel.map((t) => t.hours) ?? [1]));
@@ -52,6 +64,9 @@ export default function App() {
           <div className="hero-sub">last touched {stall.lastAdvanced.slice(0, 10)} · week of Jun 29</div>
         </div>
       )}
+
+      <ReckoningCard reckoning={reckoning} user={user} pro={pro}
+        onRequireAuth={() => setAuthOpen(true)} onUpgraded={() => isPro().then(setPro)} />
 
       <LivePanel user={user} onRequireAuth={() => setAuthOpen(true)} />
 
@@ -195,6 +210,54 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
         )}
         {!busy && !res && !err && <div className="thinking idle">waiting for a frame…</div>}
       </div>
+    </section>
+  );
+}
+
+function ReckoningCard({ reckoning, user, pro, onRequireAuth }: {
+  reckoning: Reckoning | null; user: User | null; pro: boolean;
+  onRequireAuth: () => void; onUpgraded: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function upgrade() {
+    if (!user) { onRequireAuth(); return; }
+    setBusy(true); setErr(null);
+    try { location.href = await upgradeToPro(); }
+    catch (e) { setErr(String(e).replace("Error: ", "")); setBusy(false); }
+  }
+
+  return (
+    <section className="card reckoning">
+      <div className="reck-head">
+        <h2>Your weekly Reckoning</h2>
+        <span className={pro ? "badge pro" : "badge"}>{pro ? "PRO" : "Pro"}</span>
+      </div>
+      <p className="hint">An accountability coach reads your reconciled graph and tells you the truth — powered by a RocketRide Cloud pipeline.</p>
+
+      {!reckoning && <div className="thinking idle">your coach is preparing the first reckoning…</div>}
+
+      {reckoning && pro && (
+        <>
+          <blockquote className="reck-text">{reckoning.narrative}</blockquote>
+          <div className="reck-meta">via {reckoning.model} · week of {reckoning.week_of}</div>
+        </>
+      )}
+
+      {reckoning && !pro && (
+        <div className="reck-lock">
+          <blockquote className="reck-text blurred">{reckoning.narrative}</blockquote>
+          <div className="reck-cta">
+            <div>
+              <div className="cta-title">🔒 Unlock your Reckoning</div>
+              <div className="hint">Groundtruth Pro — $9/mo · coaching, unlimited live check-ins, full history.</div>
+              {err && <div className="err">{err}</div>}
+            </div>
+            <button onClick={upgrade} disabled={busy}>{busy ? "…" : user ? "Upgrade to Pro" : "Log in to upgrade"}</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

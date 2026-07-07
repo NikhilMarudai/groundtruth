@@ -2,9 +2,18 @@
 
 **App:** `app_c8rxilh0nxr6` · **Demo URL:** https://groundtruth.butterbase.dev · **API base:** `https://api.butterbase.ai/v1/app_c8rxilh0nxr6`
 
-## Tables (migration 1)
-- `nudges` — insights the brain generated (kind, title, body, severity, meta, user_id)
-- `camera_events` — live labeled frames (label, confidence, reason, image_object_id, user_id)
+## Tables
+- `nudges` — insights the brain generated (kind, title, body, severity, meta, user_id) — **RLS user-isolated**
+- `camera_events` — live labeled frames (label, confidence, reason, image_object_id, user_id) — **RLS user-isolated**
+- `reckonings` — global weekly coaching narrative (narrative, facts, model, week_of) — **no RLS, public read**. The RocketRide worker writes here; the frontend reads the latest and gates it behind Pro.
+
+## Payments (in active use)
+- **Plan:** `Groundtruth Pro` — $9/mo (id `6a196a8b-b88f-4b84-a7cd-9779d03b781f`), created via `POST /v1/{app}/billing/plans`.
+- **Flow:** frontend `POST /v1/{app}/billing/subscribe` (user JWT) → Stripe Checkout. The Reckoning card is Pro-gated.
+- **Blocked on seller:** Stripe **Connect onboarding** must be completed once (account `acct_1TqgxpCQxNkfKXm3`) before checkout succeeds. Onboarding URL generated via `POST /v1/{app}/billing/connect/onboard`.
+
+## Reckoning serving contract (for the RocketRide worker)
+`pipeline/reckon.mjs` should `POST /v1/{app}/reckonings` (with the `bb_sk` service key) a row `{ narrative, facts, model, week_of }`. The frontend reads `GET /v1/{app}/reckonings?order=created_at.desc&limit=1` (public). An **interim** row (model `butterbase-gateway (interim, pre-RocketRide)`) is seeded so the UI works now; the worker's row supersedes it.
 
 ## Functions
 | Name | Route | Auth | What |

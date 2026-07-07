@@ -39,6 +39,18 @@ button.ghost { background: transparent; color: var(--dim); border: 1px solid var
 .modal button { width: 100%; margin-top: 4px; padding: 11px; }
 .switch { color: var(--accent); font-size: 13px; text-align: center; margin: 14px 0 0; cursor: pointer; }
 
+.reckoning { background: linear-gradient(135deg, #1b2233, var(--panel)); }
+.reck-head { display: flex; align-items: center; gap: 10px; }
+.badge { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--line); color: var(--dim); }
+.badge.pro { background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #06101f; border: 0; }
+.reck-text { font-size: 17px; line-height: 1.55; margin: 12px 0 6px; padding-left: 14px; border-left: 3px solid var(--accent2); color: var(--text); }
+.reck-meta { color: var(--dim); font-size: 12px; }
+.reck-lock { position: relative; }
+.reck-text.blurred { filter: blur(6px); user-select: none; pointer-events: none; opacity: 0.7; }
+.reck-cta { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px; }
+.cta-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.reck-cta button { white-space: nowrap; }
+
 .hero {
   background: linear-gradient(135deg, #2a1f3d, #161b22);
   border: 1px solid var(--line); border-radius: 16px;

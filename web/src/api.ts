@@ -110,3 +110,39 @@ export async function getMyCheckins(): Promise<CheckIn[]> {
   if (!r.ok) return [];
   return r.json();
 }
+
+// --- Reckoning (RocketRide coaching narrative) + payment -------------------
+export const PRO_PLAN_ID = "6a196a8b-b88f-4b84-a7cd-9779d03b781f";
+export type Reckoning = { id: string; narrative: string; model: string | null; week_of: string | null; created_at: string };
+
+// Public read of the latest reckoning (global — the shared demo week).
+export async function getReckoning(): Promise<Reckoning | null> {
+  const r = await fetch(`${API}/reckonings?order=created_at.desc&limit=1`);
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return rows[0] ?? null;
+}
+
+// Current user's subscription (Pro or not).
+export async function isPro(): Promise<boolean> {
+  const t = token();
+  if (!t) return false;
+  const r = await fetch(`${API}/billing/subscription`, { headers: { Authorization: `Bearer ${t}` } });
+  if (!r.ok) return false;
+  const sub = await r.json().catch(() => null);
+  return !!sub && (sub.status === "active" || sub.status === "trialing");
+}
+
+// Start a Stripe Checkout session to upgrade. Returns a URL to redirect to.
+export async function upgradeToPro(): Promise<string> {
+  const t = token();
+  if (!t) throw new Error("Log in first.");
+  const r = await fetch(`${API}/billing/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${t}` },
+    body: JSON.stringify({ planId: PRO_PLAN_ID, successUrl: `${location.origin}/?upgraded=1`, cancelUrl: location.origin }),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.url) throw new Error(d.error || "Billing isn’t live yet — the seller needs to finish Stripe onboarding.");
+  return d.url;
+}
