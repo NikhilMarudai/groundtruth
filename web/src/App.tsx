@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import GraphView from "./GraphView";
 import {
   getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
   getReckoning, isPro, startProCheckout,
@@ -69,6 +70,8 @@ export default function App() {
         onRequireAuth={() => setAuthOpen(true)} onUpgraded={() => isPro().then(setPro)} />
 
       <LivePanel user={user} onRequireAuth={() => setAuthOpen(true)} />
+
+      <GraphView />
 
       <section className="grid">
         <div className="card">

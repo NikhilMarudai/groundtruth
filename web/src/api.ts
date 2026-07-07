@@ -79,6 +79,16 @@ export async function logout() {
 }
 
 // --- data / functions ------------------------------------------------------
+export type GraphNode = { id: string; type: string; label: string; priority: number | null };
+export type GraphLink = { source: string; target: string; type: string };
+
+// Public: the life-graph structure for the visualization panel.
+export async function getGraph(): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
+  const r = await fetch(`${API}/fn/graph`);
+  if (!r.ok) return { nodes: [], links: [] };
+  return r.json();
+}
+
 export async function getInsights(now: string = DEMO_NOW): Promise<Insights> {
   const r = await fetch(`${API}/fn/insights?now=${encodeURIComponent(now)}`);
   if (!r.ok) throw new Error(`insights ${r.status}`);

@@ -23,6 +23,7 @@
 | Name | Route | Auth | What |
 |---|---|---|---|
 | `insights` | `GET /fn/insights?now=<iso>` | none | Queries the Neo4j life graph over the HTTPS Query API → `{ reconciliation, misalignment, stall, timeByLabel }`. Source: [`functions/insights.ts`](functions/insights.ts). |
+| `graph` | `GET /fn/graph` | none | Returns the life-graph structure — Goal/Project/Intention/Artifact nodes + ADVANCES/PRODUCED_IN/INTENDED_FOR links — for the force-directed visualization panel. |
 | `perceive` | `POST /fn/perceive` | **required (JWT)** | `{ image_url\|image_base64, now? }` → BB vision label + **stores the frame to Storage** (classify + upload run in parallel) → `camera_events` row (incl. `image_object_id`) + live `Activity` node in Neo4j → graph-reasoned nudge → `nudges` row. Source: [`functions/perceive.ts`](functions/perceive.ts). Uses `detail:"low"` vision. Runs as the end user; `user_id` auto-populated by the RLS trigger. |
 
 > **Frames are persisted:** each read is saved to Butterbase Storage (public per-object) and its `objectId` stored on the row; the frontend mints a presigned download URL to show a thumbnail in the (RLS-scoped) check-in history. Good for demo replay + labelled training data.
