@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GraphView from "./GraphView";
 import DayView from "./DayView";
+import VisionView from "./VisionView";
 import {
   getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
   getReckoning, isPro, startProCheckout,
@@ -121,6 +122,8 @@ export default function App() {
         </div>
       </section>
 
+      <VisionView />
+
       <footer>Butterbase · Neo4j · RocketRide — reasoning over a live graph, not flat rows.</footer>
 
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} onAuthed={(u) => { setUser(u); setAuthOpen(false); }} />}
@@ -164,6 +167,25 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
     await send({ image_base64: c.toDataURL("image/jpeg", 0.7).split(",")[1] });
   }
 
+  // Screen truth: share the screen, grab one frame, classify it through the
+  // same perceive flow — is "Working" actually the IDE, or YouTube?
+  async function readScreen() {
+    try {
+      const s = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const v = document.createElement("video");
+      v.srcObject = s;
+      await v.play();
+      await new Promise((r) => setTimeout(r, 400)); // let a real frame land
+      const scale = Math.min(1, 1024 / (v.videoWidth || 1024));
+      const c = document.createElement("canvas");
+      c.width = Math.round((v.videoWidth || 1024) * scale);
+      c.height = Math.round((v.videoHeight || 640) * scale);
+      c.getContext("2d")!.drawImage(v, 0, 0, c.width, c.height);
+      s.getTracks().forEach((t) => t.stop());
+      await send({ image_base64: c.toDataURL("image/jpeg", 0.7).split(",")[1] });
+    } catch { setErr("Screen share cancelled."); }
+  }
+
   async function send(input: { image_base64?: string; image_url?: string }) {
     setBusy(true); setErr(null); setRes(null);
     try {
@@ -195,7 +217,9 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
           {!camOn
             ? <button onClick={startCam}>Turn on camera</button>
             : <button onClick={captureAndSend} disabled={busy}>{busy ? "Reading…" : "Read this frame"}</button>}
+          <button className="ghost" onClick={readScreen} disabled={busy}>🖥️ Read my screen</button>
         </div>
+        <p className="hint">Screen truth: presence says you’re at the desk — the screen says whether desk time was the IDE or YouTube.</p>
         <div className="samples">
           <span className="hint">or a sample:</span>
           {SAMPLES.map((s) => (

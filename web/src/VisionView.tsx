@@ -6,6 +6,7 @@
 
 const LIVE_NOW = [
   { icon: "📷", title: "Live perception", body: "A camera frame → activity label via the Butterbase AI gateway, dropped into the graph at 'now' and reasoned against your plan in seconds." },
+  { icon: "🖥️", title: "Screen truth", body: "\"Working\" isn't one thing — share your screen and the agent reads whether it's the IDE or YouTube. Presence says you're at the desk; the screen says what the desk time really was." },
   { icon: "🕸️", title: "Life graph in Neo4j", body: "Goals, projects, intentions, activities, artifacts — connected, not rows. Reconciliation is a graph traversal: Intention → Activity → Artifact." },
   { icon: "⚖️", title: "Intention vs. reality", body: "Every plan item gets a verdict — done, present-but-no-output, skipped — by joining what the camera saw with what you actually shipped." },
   { icon: "🧨", title: "The weekly Reckoning", body: "A RocketRide Cloud pipeline reads the reconciled graph and coaches you bluntly: the gap, the numbers, one action for tomorrow." },
