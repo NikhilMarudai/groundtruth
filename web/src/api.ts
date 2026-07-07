@@ -95,6 +95,25 @@ export async function getInsights(now: string = DEMO_NOW): Promise<Insights> {
   return r.json();
 }
 
+// The planned-vs-actual day view: intentions (with reconciliation verdict)
+// aligned on a time axis against the activity spans actually recorded.
+export type DayIntention = {
+  title: string; planStart: string; planEnd: string; project: string;
+  status: "fulfilled" | "present-no-output" | "skipped";
+};
+export type DayActivity = { label: string; start: string; end: string; confidence: number | null };
+export type DayData = {
+  date: string; dates: string[];
+  intentions: DayIntention[]; activities: DayActivity[];
+};
+export const DEMO_DAY = "2026-07-03";
+
+export async function getDay(date: string = DEMO_DAY): Promise<DayData> {
+  const r = await fetch(`${API}/fn/day?date=${encodeURIComponent(date)}`);
+  if (!r.ok) throw new Error(`day ${r.status}`);
+  return r.json();
+}
+
 export async function perceive(input: {
   image_base64?: string; image_url?: string; now?: string;
 }): Promise<PerceiveResult> {

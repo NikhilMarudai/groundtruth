@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import GraphView from "./GraphView";
+import DayView from "./DayView";
 import {
   getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
   getReckoning, isPro, startProCheckout,
@@ -72,6 +73,8 @@ export default function App() {
       <LivePanel user={user} onRequireAuth={() => setAuthOpen(true)} />
 
       <GraphView />
+
+      <DayView />
 
       <section className="grid">
         <div className="card">
