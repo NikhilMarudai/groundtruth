@@ -1,0 +1,14 @@
+{
+  "name": "jarvis-graph",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Neo4j life-graph loader + reconciliation queries for Jarvis",
+  "scripts": {
+    "load": "node load.mjs",
+    "insights": "node queries.mjs"
+  },
+  "dependencies": {
+    "neo4j-driver": "^5.28.0"
+  }
+}

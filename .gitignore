@@ -1,5 +1,9 @@
-node_modules/
 .env
-.env.local
-*.log
-.DS_Store
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+seed/companies.json
+frontend/dist/
+frontend.zip
+.pytest_cache/
