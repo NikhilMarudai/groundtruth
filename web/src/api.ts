@@ -1,6 +1,6 @@
 // Client for the deployed Butterbase functions. No secrets: these endpoints
 // are public (auth:none). The app_id is public information.
-export const APP_ID = "app_0wk6a2jkez7f";
+export const APP_ID = "app_c8rxilh0nxr6";
 export const API = `https://api.butterbase.ai/v1/${APP_ID}`;
 
 // The demo's reference "now": Friday evening, so the week reads fully and the

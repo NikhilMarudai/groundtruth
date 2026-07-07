@@ -1,4 +1,4 @@
-// Jarvis seed generator — deterministic synthetic week for one persona.
+// Groundtruth seed generator — deterministic synthetic week for one persona.
 // Top-down: the narrative is authored here; activity/artifact streams are derived.
 // No deps, no external calls. Run: `node seed/generate.mjs`
 //
@@ -22,7 +22,7 @@ const goals = [
 ];
 const projects = [
   { id: "p_thesis", title: "Thesis", goalId: "g_thesis" },
-  { id: "p_side", title: "Side project (Jarvis)", goalId: "g_side" },
+  { id: "p_side", title: "Side project (Groundtruth)", goalId: "g_side" },
   { id: "p_fit", title: "Fitness", goalId: "g_fit" },
   { id: "p_admin", title: "Admin / life", goalId: null },
 ];
@@ -58,7 +58,7 @@ const WEEK = [
     artifacts: [
       ["commit", "thesis: draft ch3 intro", "11:35", "p_thesis"],
       ["task", "Outline ch3 sections", "11:48", "p_thesis"],
-      ["commit", "jarvis: seed generator", "16:10", "p_side"],
+      ["commit", "groundtruth: seed generator", "16:10", "p_side"],
     ],
   },
   // Day 1 — Tue: HERO 1. Intended 3h thesis; present but ZERO thesis output.
@@ -80,7 +80,7 @@ const WEEK = [
       ["Sleeping", "23:15", "23:59", 0.95],
     ],
     artifacts: [
-      ["commit", "jarvis: camera capture", "17:10", "p_side"], // no thesis artifact
+      ["commit", "groundtruth: camera capture", "17:10", "p_side"], // no thesis artifact
     ],
   },
   // Day 2 — Wed: side-project heavy; thesis review intended but skipped.
@@ -102,9 +102,9 @@ const WEEK = [
       ["Sleeping", "23:10", "23:59", 0.95],
     ],
     artifacts: [
-      ["commit", "jarvis: neo4j loader", "12:40", "p_side"],
-      ["commit", "jarvis: graph queries", "16:20", "p_side"],
-      ["commit", "jarvis: pipeline stub", "17:30", "p_side"], // thesis review never happened
+      ["commit", "groundtruth: neo4j loader", "12:40", "p_side"],
+      ["commit", "groundtruth: graph queries", "16:20", "p_side"],
+      ["commit", "groundtruth: pipeline stub", "17:30", "p_side"], // thesis review never happened
     ],
   },
   // Day 3 — Thu: thesis attempted briefly (present, no output), fitness done.
@@ -127,7 +127,7 @@ const WEEK = [
       ["Sleeping", "23:15", "23:59", 0.95],
     ],
     artifacts: [
-      ["commit", "jarvis: frontend timeline", "16:30", "p_side"], // no thesis artifact
+      ["commit", "groundtruth: frontend timeline", "16:30", "p_side"], // no thesis artifact
     ],
   },
   // Day 4 — Fri: HERO 3 becomes visible — thesis untouched since Mon (4 days).
@@ -148,8 +148,8 @@ const WEEK = [
       ["Sleeping", "23:40", "23:59", 0.95],
     ],
     artifacts: [
-      ["commit", "jarvis: graph viz", "11:30", "p_side"],
-      ["commit", "jarvis: insight panel", "15:10", "p_side"],
+      ["commit", "groundtruth: graph viz", "11:30", "p_side"],
+      ["commit", "groundtruth: insight panel", "15:10", "p_side"],
     ],
   },
   // Day 5 — Sat: rest; a fulfilled fitness intention (activity matches, no artifact needed).
@@ -190,7 +190,7 @@ const WEEK = [
       ["Sleeping", "23:00", "23:59", 0.95],
     ],
     artifacts: [
-      ["commit", "jarvis: cognee memory", "15:40", "p_side"],
+      ["commit", "groundtruth: cognee memory", "15:40", "p_side"],
       ["task", "Plan next week", "19:55", "p_admin"],
     ],
   },

@@ -1,6 +1,6 @@
 # backend/ — Butterbase app
 
-**App:** `app_0wk6a2jkez7f` · **Demo URL:** https://jarvis.butterbase.dev · **API base:** `https://api.butterbase.ai/v1/app_0wk6a2jkez7f`
+**App:** `app_c8rxilh0nxr6` · **Demo URL:** https://groundtruth.butterbase.dev · **API base:** `https://api.butterbase.ai/v1/app_c8rxilh0nxr6`
 
 ## Tables (migration 1)
 - `nudges` — insights the brain generated (kind, title, body, severity, meta, user_id)
@@ -25,7 +25,7 @@ NEO4J_PASSWORD=<aura password>
 
 ### Verify
 ```
-curl -s https://api.butterbase.ai/v1/app_0wk6a2jkez7f/fn/insights | head
+curl -s https://api.butterbase.ai/v1/app_c8rxilh0nxr6/fn/insights | head
 ```
 
 ## ⚠️ Secrets to rotate after the hackathon

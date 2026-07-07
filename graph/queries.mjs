@@ -51,7 +51,7 @@ RETURN a.label AS label,
 ORDER BY hours DESC`;
 
 try {
-  console.log(`\n=== Jarvis insights  (now = ${NOW}) ===\n`);
+  console.log(`\n=== Groundtruth insights  (now = ${NOW}) ===\n`);
 
   console.log("RECONCILIATION (intention vs. reality)");
   const rec = await session.run(RECONCILE);

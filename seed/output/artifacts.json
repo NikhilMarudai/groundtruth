@@ -17,63 +17,63 @@
     "id": "art_0_2",
     "ts": "2026-06-29T16:10:00",
     "type": "commit",
-    "ref": "jarvis: seed generator",
+    "ref": "groundtruth: seed generator",
     "projectId": "p_side"
   },
   {
     "id": "art_1_0",
     "ts": "2026-06-30T17:10:00",
     "type": "commit",
-    "ref": "jarvis: camera capture",
+    "ref": "groundtruth: camera capture",
     "projectId": "p_side"
   },
   {
     "id": "art_2_0",
     "ts": "2026-07-01T12:40:00",
     "type": "commit",
-    "ref": "jarvis: neo4j loader",
+    "ref": "groundtruth: neo4j loader",
     "projectId": "p_side"
   },
   {
     "id": "art_2_1",
     "ts": "2026-07-01T16:20:00",
     "type": "commit",
-    "ref": "jarvis: graph queries",
+    "ref": "groundtruth: graph queries",
     "projectId": "p_side"
   },
   {
     "id": "art_2_2",
     "ts": "2026-07-01T17:30:00",
     "type": "commit",
-    "ref": "jarvis: pipeline stub",
+    "ref": "groundtruth: pipeline stub",
     "projectId": "p_side"
   },
   {
     "id": "art_3_0",
     "ts": "2026-07-02T16:30:00",
     "type": "commit",
-    "ref": "jarvis: frontend timeline",
+    "ref": "groundtruth: frontend timeline",
     "projectId": "p_side"
   },
   {
     "id": "art_4_0",
     "ts": "2026-07-03T11:30:00",
     "type": "commit",
-    "ref": "jarvis: graph viz",
+    "ref": "groundtruth: graph viz",
     "projectId": "p_side"
   },
   {
     "id": "art_4_1",
     "ts": "2026-07-03T15:10:00",
     "type": "commit",
-    "ref": "jarvis: insight panel",
+    "ref": "groundtruth: insight panel",
     "projectId": "p_side"
   },
   {
     "id": "art_6_0",
     "ts": "2026-07-05T15:40:00",
     "type": "commit",
-    "ref": "jarvis: cognee memory",
+    "ref": "groundtruth: cognee memory",
     "projectId": "p_side"
   },
   {

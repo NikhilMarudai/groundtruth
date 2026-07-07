@@ -27,7 +27,7 @@ export function driver() {
 
 // Reference "now" for the demo — the moment the assistant reasons about.
 // Defaults to Friday evening so the thesis-stall reads as "4 days".
-export const NOW = process.env.JARVIS_NOW || "2026-07-03T18:00:00";
+export const NOW = process.env.GROUNDTRUTH_NOW || "2026-07-03T18:00:00";
 
 // Which activity label confirms an intention for a given project.
 export const CONFIRMING_LABEL = { p_fit: "Exercising" }; // default: "Working"

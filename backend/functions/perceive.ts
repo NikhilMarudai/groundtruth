@@ -9,7 +9,7 @@
 
 const CATS = "Sleeping, Working, Exercising, Eating, Personal care, Chores, Leisure, Away";
 const SYS =
-  `You are Jarvis perception. Classify the single primary human activity into EXACTLY one of: ${CATS}. ` +
+  `You are Groundtruth perception. Classify the single primary human activity into EXACTLY one of: ${CATS}. ` +
   `'Away' = no person present. Reply ONLY strict JSON: {"label":"<one>","confidence":0.0-1.0,"reason":"<8 words max>"}`;
 
 export default async function handler(req, ctx) {

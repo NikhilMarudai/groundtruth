@@ -1,6 +1,6 @@
-# Jarvis (hackathon cut) — Design Spec
+# Groundtruth (hackathon cut) — Design Spec
 
-*HackwithBay 3.0 — "Building Graph-Aware Agentic Applications." Working name: **Jarvis**. Date: 2026-07-07.*
+*HackwithBay 3.0 — "Building Graph-Aware Agentic Applications." Name: **Groundtruth** (the camera is the ground truth against your plan's prediction). Date: 2026-07-07.*
 
 ## One line
 A daily-accountability agent that reconciles what you **intended** against what you **actually did**, by reasoning over a *life graph* — and can interpret a live camera frame (or a chosen photo) and fold it into that reasoning in real time.
@@ -85,7 +85,7 @@ Log in → week timeline + life graph → agent surfaces *"thesis goal hasn't ad
 - Perception = **one vision call**. No Swift, no Neural Engine (explicitly cut — it's the wrong tool for a timebox).
 
 ## Parked
-- Rename from "Jarvis" before submission (trademark-ish). Candidates: *Throughline*, *Reckon*.
+- ~~Rename from "Jarvis"~~ → renamed to **Groundtruth**; subdomain `groundtruth.butterbase.dev` (app `app_c8rxilh0nxr6`).
 - Multi-user / real on-device private perception — that's the real product, not the hackathon cut.
 </content>
 </invoke>

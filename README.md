@@ -1,4 +1,4 @@
-# Jarvis (hackathon cut) — HackwithBay 3.0
+# Groundtruth (hackathon cut) — HackwithBay 3.0
 
 A daily-accountability agent that reconciles what you **intended** vs. what you **actually did** by reasoning over a *life graph*, and can interpret a live camera frame (or a chosen photo) and fold it into that reasoning in real time.
 

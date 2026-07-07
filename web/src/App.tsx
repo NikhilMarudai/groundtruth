@@ -32,7 +32,7 @@ export default function App() {
   return (
     <div className="wrap">
       <header>
-        <div className="logo">◆ Jarvis</div>
+        <div className="logo">◆ Groundtruth</div>
         <div className="tag">Does your day match your intentions?</div>
       </header>
 
