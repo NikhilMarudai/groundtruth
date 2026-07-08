@@ -7,6 +7,9 @@ drop it into that graph in real time, and tell you the truth about your day.
 🔗 **Live demo:** https://groundtruth.butterbase.dev
 🏆 Built for **HackwithBay 3.0** — *Building Graph-Aware Agentic Applications with Butterbase, Neo4j, and RocketRide Cloud.*
 
+> **Status:** live, submitted, demoable on synthetic data. It runs on one shared demo graph (not yet per-user), and payment uses a Butterbase-recorded fallback (Stripe onboarding not completed).
+> **Picking this up later? → read [`docs/HANDOFF.md`](docs/HANDOFF.md) first** — full state, credentials to rotate, resume steps, and the roadmap to a real product.
+
 ---
 
 ## The idea
@@ -47,6 +50,13 @@ are multi-hop traversals with the path as an explainable receipt.
 
 Cognee / Daytona: not integrated (see [`docs/submission.md`](docs/submission.md) for the honest rationale + Cognee roadmap).
 
+## What's in the app
+Two tabs:
+- **Dashboard** — the stall insight · live **camera / screen** perception (+ your stored-frame history) · a **planned-vs-actual** day calendar · a **reasoning-layer** explainer (why GraphRAG catches multi-week patterns) · reconciliation / misalignment / time-by-activity · the Pro-gated **Reckoning** (animated dopamine stat rings + RocketRide coaching).
+- **How it works** (`/#about`) — cinematic landing, a "what it catches" scenarios section, and the vision/roadmap.
+
+Cross-cutting: email **auth** + per-user **RLS**, and a **Pro** subscription that gates the Reckoning.
+
 ## Repo layout
 | Dir | What |
 |---|---|
@@ -66,3 +76,9 @@ set -a; source .env; set +a && node pipeline/reckon.mjs        # run the RocketR
 ```
 
 See [`docs/submission.md`](docs/submission.md) for the full writeup and 90-second demo script.
+
+## Docs
+- **[`docs/HANDOFF.md`](docs/HANDOFF.md)** — state of things, accounts inventory, how to resume, and how to turn it into a real product *(read this first if returning)*
+- [`docs/architecture.md`](docs/architecture.md) — tech stack + runtime flows, explained
+- [`docs/submission.md`](docs/submission.md) — hackathon writeup + demo script
+- [`backend/README.md`](backend/README.md) — Butterbase app: tables, functions, payment, deploy process
