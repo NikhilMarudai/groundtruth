@@ -16,7 +16,7 @@ const BECOMES = [
   { icon: "🌊", t: "Your ambient layer", d: "Calendar, commits, comms — every signal into one life graph. Not an app you check; the layer your days run on." },
 ];
 
-export default function LandingHero() {
+export default function LandingHero({ onOpenApp }: { onOpenApp: () => void }) {
   return (
     <section className="landing">
       <style>{`
@@ -42,6 +42,10 @@ export default function LandingHero() {
         .l-scroll { margin-top:22px; color:#9db4d6; font-size:13px; display:inline-flex; gap:8px; align-items:center; }
         .l-scroll .a { animation: gtbob 1.6s ease-in-out infinite; }
         @keyframes gtbob { 50% { transform: translateY(4px); } }
+        .l-cta { margin-top:22px; background:linear-gradient(90deg,#6ea8fe,#a371f7); color:#06101f; border:0;
+          border-radius:11px; padding:13px 22px; font-weight:700; font-size:15px; cursor:pointer;
+          box-shadow:0 8px 30px #6ea8fe33; }
+        .l-cta:hover { filter:brightness(1.06); }
 
         .l-loop { display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; margin-top:36px; }
         .l-step { background:#0f1420cc; border:1px solid var(--line); border-radius:14px; padding:18px 18px 20px; }
@@ -77,7 +81,7 @@ export default function LandingHero() {
           back on track — building a living memory of your life that gets smarter every single day.
           Not a tracker you check. An assistant that actually knows where your time goes.
         </p>
-        <div className="l-scroll"><span className="a">↓</span> It's live below — scroll to see your week, or read a frame right now.</div>
+        <button className="l-cta" onClick={onOpenApp}>Open the live dashboard →</button>
       </div>
 
       <div className="l-loop l-in" style={{ animationDelay: ".12s" }}>

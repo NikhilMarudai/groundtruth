@@ -47,11 +47,19 @@ export default function App() {
   const maxHours = Math.max(1, ...(ins?.timeByLabel.map((t) => t.hours) ?? [1]));
   const maxOut = Math.max(1, ...(ins?.misalignment.map((m) => m.outputs) ?? [1]));
 
+  const [view, setView] = useState<"app" | "about">(
+    () => (["about", "vision"].includes(location.hash.slice(1)) ? "about" : "app")
+  );
+  function go(v: "app" | "about") { setView(v); location.hash = v === "about" ? "about" : ""; window.scrollTo(0, 0); }
+
   return (
     <div className="wrap">
       <header>
         <div className="logo">◆ Groundtruth</div>
-        <div className="tag">Does your day match your intentions?</div>
+        <nav className="tabs">
+          <button className={view === "app" ? "tab on" : "tab"} onClick={() => go("app")}>Dashboard</button>
+          <button className={view === "about" ? "tab on" : "tab"} onClick={() => go("about")}>How it works</button>
+        </nav>
         <div className="auth-slot">
           {user
             ? <><span className="who">{user.email}</span><button className="ghost" onClick={async () => { await logout(); setUser(null); }}>Log out</button></>
@@ -59,9 +67,15 @@ export default function App() {
         </div>
       </header>
 
-      <LandingHero />
+      {view === "about" && (
+        <>
+          <LandingHero onOpenApp={() => go("app")} />
+          <ScenariosView />
+          <VisionView />
+        </>
+      )}
 
-      <ScenariosView />
+      {view === "app" && (<>
 
       {err && <div className="card err">Couldn’t load insights: {err}</div>}
 
@@ -74,14 +88,11 @@ export default function App() {
         </div>
       )}
 
-      <ReckoningCard reckoning={reckoning} user={user} pro={pro}
-        onRequireAuth={() => setAuthOpen(true)} onUpgraded={() => isPro().then(setPro)} />
-
       <LivePanel user={user} onRequireAuth={() => setAuthOpen(true)} />
 
-      <GraphView />
-
       <DayView />
+
+      <GraphView />
 
       <section className="grid">
         <div className="card">
@@ -128,7 +139,10 @@ export default function App() {
         </div>
       </section>
 
-      <VisionView />
+      <ReckoningCard reckoning={reckoning} user={user} pro={pro}
+        onRequireAuth={() => setAuthOpen(true)} onUpgraded={() => isPro().then(setPro)} />
+
+      </>)}
 
       <footer>Butterbase · Neo4j · RocketRide — reasoning over a live graph, not flat rows.</footer>
 

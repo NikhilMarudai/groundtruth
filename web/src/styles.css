@@ -20,6 +20,9 @@ body {
 header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; }
 .logo { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
 .tag { color: var(--dim); }
+.tabs { display: flex; gap: 4px; margin-left: 6px; }
+.tab { background: transparent; color: var(--dim); border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.tab.on { color: var(--text); background: var(--panel2); border-color: var(--line); }
 .auth-slot { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .who { color: var(--dim); font-size: 13px; }
 button.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line); }
