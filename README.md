@@ -4,11 +4,10 @@
 *actually did* — reasoning over a **life graph**, not flat rows — and can read a live camera frame,
 drop it into that graph in real time, and tell you the truth about your day.
 
-🔗 **Live demo:** https://groundtruth.butterbase.dev
 🏆 Built for **HackwithBay 3.0** — *Building Graph-Aware Agentic Applications with Butterbase, Neo4j, and RocketRide Cloud.*
 
-> **Status:** live, submitted, demoable on synthetic data. It runs on one shared demo graph (not yet per-user), and payment uses a Butterbase-recorded fallback (Stripe onboarding not completed).
-> **Picking this up later? → read [`docs/HANDOFF.md`](docs/HANDOFF.md) first** — full state, credentials to rotate, resume steps, and the roadmap to a real product.
+> ⚰️ **DECOMMISSIONED (2026-07-08).** The hosted demo is **offline** — after submission the Butterbase app was deleted, its API key revoked, and the Neo4j graph wiped. See the working app in [`docs/screenshots/`](docs/screenshots). This repo is the archived source; to revive, re-provision from scratch per **[`docs/HANDOFF.md`](docs/HANDOFF.md)** (which also lists the manual teardown steps still outstanding — e.g. cancel the Butterbase paid plan).
+> _(It was: live + submitted, demoable on synthetic data, single shared graph, payment via a Butterbase-recorded fallback.)_
 
 ---
 

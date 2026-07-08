@@ -5,7 +5,23 @@ Everything you need to pick this back up cold. Written at the end of the Hackwit
 ## TL;DR
 Groundtruth is a **daily-accountability agent**: it reconciles what you *intended* vs. what you *actually did* over a **Neo4j life-graph**, reads a live camera/screen frame and drops it into the graph in real time, and a **RocketRide Cloud** pipeline coaches you on the gap. Backend is entirely **Butterbase**. It's **live, submitted, and demoable** on synthetic data. This doc is the map to resume or productize it.
 
-## Live surfaces & accounts (inventory)
+## ⚰️ Decommissioned — 2026-07-08
+Torn down after submission. **Done automatically:**
+- Butterbase app `app_c8rxilh0nxr6` **deleted** — site, functions, DB, storage gone (URL + `/fn/*` now 404).
+- Butterbase API key `bb_sk_4112d8…` **revoked**.
+- Neo4j graph **wiped** (0 nodes; the Aura instance still exists, empty).
+- Final screenshots archived in [`docs/screenshots/`](screenshots).
+
+**⚠️ Still on you — I couldn't do these:**
+- **CANCEL the Butterbase `Launch` plan — $19/mo, active, auto-renews 2026-08-07** (`cancelAtPeriodEnd: false`). The billing-portal API is broken, so cancel manually at **dashboard.butterbase.ai/billing**. *This is the one that costs money.*
+- **Delete the Neo4j Aura instance `7bbeddb7`** in the Aura console (empty but still provisioned).
+- **Revoke the RocketRide `rr_…` key** in the RocketRide dashboard.
+- **Second app `app_8mzyrc2lcqg1` ("kindred")** — a separate earlier project on the same account; left untouched. Delete if abandoned.
+- Local `.env` still holds creds (dead `bb_sk`, still-live Neo4j/`rr_`) — it's gitignored; clear it if you want.
+
+_Everything below describes the project as it was before teardown, for if you rebuild._
+
+## Live surfaces & accounts (inventory — now torn down)
 | Thing | Value |
 |---|---|
 | Live demo | https://groundtruth.butterbase.dev |
