@@ -4,6 +4,7 @@ import ScenariosView from "./ScenariosView";
 import GraphView from "./GraphView";
 import DayView from "./DayView";
 import VisionView from "./VisionView";
+import ReckoningStats from "./ReckoningStats";
 import {
   getInsights, perceive, getMyCheckins, getDownloadUrl, currentUser, login, signup, logout,
   getReckoning, isPro, startProCheckout,
@@ -139,7 +140,7 @@ export default function App() {
         </div>
       </section>
 
-      <ReckoningCard reckoning={reckoning} user={user} pro={pro}
+      <ReckoningCard reckoning={reckoning} user={user} pro={pro} ins={ins}
         onRequireAuth={() => setAuthOpen(true)} onUpgraded={() => isPro().then(setPro)} />
 
       </>)}
@@ -278,8 +279,8 @@ function LivePanel({ user, onRequireAuth }: { user: User | null; onRequireAuth: 
   );
 }
 
-function ReckoningCard({ reckoning, user, pro, onRequireAuth, onUpgraded }: {
-  reckoning: Reckoning | null; user: User | null; pro: boolean;
+function ReckoningCard({ reckoning, user, pro, ins, onRequireAuth, onUpgraded }: {
+  reckoning: Reckoning | null; user: User | null; pro: boolean; ins: Insights | null;
   onRequireAuth: () => void; onUpgraded: () => void;
 }) {
   const [checkout, setCheckout] = useState(false);
@@ -301,6 +302,7 @@ function ReckoningCard({ reckoning, user, pro, onRequireAuth, onUpgraded }: {
 
       {reckoning && pro && (
         <>
+          <ReckoningStats ins={ins} />
           <blockquote className="reck-text">{reckoning.narrative}</blockquote>
           <div className="reck-meta">via {reckoning.model} · week of {reckoning.week_of}</div>
         </>
