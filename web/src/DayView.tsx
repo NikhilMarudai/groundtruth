@@ -9,7 +9,7 @@ import { getDay, type DayData, type DayIntention, type DayActivity } from "./api
 const DAY_START = 6;   // 06:00
 const DAY_END = 24;    // 24:00
 const SPAN_MIN = (DAY_END - DAY_START) * 60;
-const PX_PER_MIN = 1.15;              // lane height ≈ 18h * 60 * 1.15 ≈ 1242px
+const PX_PER_MIN = 1.035;             // lane height ≈ 18h * 60 * 1.035 ≈ 1118px (−10%)
 const LANE_H = SPAN_MIN * PX_PER_MIN;
 
 const STATUS_COLOR: Record<string, string> = {
@@ -36,6 +36,20 @@ const CAT_COLOR: Record<string, string> = {
   Away: "#39414d",
 };
 const catColor = (label: string) => CAT_COLOR[label] || "#39414d";
+
+// Representative stock frame per activity (temporary — stands in for the
+// image the camera would have captured and classified into this block).
+const PX = (id: number) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=160`;
+const CAT_IMAGE: Record<string, string> = {
+  Sleeping: PX(3771069),
+  Working: PX(3184291),
+  Exercising: PX(4056723),
+  Eating: PX(1640777),
+  "Personal care": PX(3618606),
+  Chores: PX(4239146),
+  Leisure: PX(4009401),
+  Away: PX(1329711),
+};
 
 // Minutes from 06:00, read straight off the ISO string's clock time so we
 // never apply a browser timezone offset (data is authored in wall-clock).
@@ -190,6 +204,10 @@ function ActualBlock({ a }: { a: DayActivity }) {
         <div className="dv-block-title">{a.label}</div>
         {tall && <div className="dv-block-meta">{clock(a.start)}–{clock(a.end)}</div>}
       </div>
+      {CAT_IMAGE[a.label] && g.heightPct > 3.6 && (
+        <img className="dv-thumb" src={CAT_IMAGE[a.label]} alt={a.label} loading="lazy"
+          style={{ borderColor: `${color}88` }} />
+      )}
     </div>
   );
 }
