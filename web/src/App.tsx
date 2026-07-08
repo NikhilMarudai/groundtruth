@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import LandingHero from "./LandingHero";
 import ScenariosView from "./ScenariosView";
-import GraphView from "./GraphView";
+import ReasoningLayer from "./ReasoningLayer";
 import DayView from "./DayView";
 import VisionView from "./VisionView";
 import ReckoningStats from "./ReckoningStats";
@@ -59,7 +59,7 @@ export default function App() {
         <div className="logo">◆ Groundtruth</div>
         <nav className="tabs">
           <button className={view === "app" ? "tab on" : "tab"} onClick={() => go("app")}>Dashboard</button>
-          <button className={view === "about" ? "tab on" : "tab"} onClick={() => go("about")}>How it works</button>
+          <button className={`tab flash${view === "about" ? " on" : ""}`} onClick={() => go("about")}>✨ How it works →</button>
         </nav>
         <div className="auth-slot">
           {user
@@ -93,7 +93,7 @@ export default function App() {
 
       <DayView />
 
-      <GraphView />
+      <ReasoningLayer />
 
       <section className="grid">
         <div className="card">

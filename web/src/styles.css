@@ -23,6 +23,16 @@ header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; }
 .tabs { display: flex; gap: 4px; margin-left: 6px; }
 .tab { background: transparent; color: var(--dim); border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .tab.on { color: var(--text); background: var(--panel2); border-color: var(--line); }
+.tab.flash { color: #06101f; font-weight: 700; font-size: 14px; padding: 8px 16px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2)); border: 0;
+  animation: tabpulse 2.2s ease-in-out infinite; }
+.tab.flash:hover { filter: brightness(1.07); }
+.tab.flash.on { animation: none; box-shadow: 0 0 0 2px #ffffff22 inset; }
+@keyframes tabpulse {
+  0% { box-shadow: 0 0 0 0 #6ea8fe66, 0 6px 18px #6ea8fe33; }
+  70% { box-shadow: 0 0 0 9px #6ea8fe00, 0 6px 18px #6ea8fe33; }
+  100% { box-shadow: 0 0 0 0 #6ea8fe00, 0 6px 18px #6ea8fe33; }
+}
 .auth-slot { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .who { color: var(--dim); font-size: 13px; }
 button.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line); }
